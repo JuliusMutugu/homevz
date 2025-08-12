@@ -1,0 +1,5 @@
+package com.homevz.kenya.homevz
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity : FlutterActivity()
