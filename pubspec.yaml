@@ -36,6 +36,9 @@ dependencies:
   flutter_svg: ^2.0.0
   cached_network_image: ^3.3.0
   image_picker: ^1.0.7
+  # file_picker: ^5.5.0  # Temporarily disabled due to compatibility issues
+  photo_view: ^0.14.0
+  timeago: ^3.6.1
   
   # State Management
   flutter_riverpod: ^2.4.9
@@ -68,7 +71,7 @@ dependencies:
   http: ^1.1.0  # For M-Pesa API calls
   
   # Utils
-  intl: ^0.17.0
+  intl: ^0.20.2
   uuid: ^4.2.1
   logger: ^2.0.2+1
   connectivity_plus: ^5.0.2

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'core/theme/app_theme.dart';
 import 'core/constants/app_constants.dart';
+import 'core/widgets/image_display_widget.dart';
 import 'features/authentication/presentation/pages/splash_page.dart';
 
 void main() async {
@@ -28,6 +29,7 @@ class HomeVZApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       home: const SplashPage(),
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
     );
   }

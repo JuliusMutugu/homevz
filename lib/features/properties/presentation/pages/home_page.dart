@@ -4,6 +4,11 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/providers/user_provider.dart';
 import '../../../../core/models/user_role.dart';
+import '../../../../core/services/notification_service.dart';
+import '../../../../core/widgets/image_picker_widget.dart';
+import '../../../notifications/pages/notifications_page.dart';
+import '../../../community/pages/community_page.dart';
+import '../../../profile/pages/profile_page.dart';
 import '../../property_details_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -27,19 +32,21 @@ class _HomePageState extends ConsumerState<HomePage> {
       body: IndexedStack(
         index: _currentIndex,
         children: isOwner 
-            ? const [
-                _OwnerDashboardTab(),
-                _MyPropertiesTab(),
-                _ApplicationsTab(),
-                _MessagesTab(),
-                _ProfileTab(),
+            ? [
+                const _OwnerDashboardTab(),
+                const _MyPropertiesTab(),
+                const _ApplicationsTab(),
+                const NotificationsPage(),
+                const CommunityPage(),
+                const ProfilePage(),
               ]
-            : const [
-                _HomeTab(),
-                _SearchTab(),
-                _FavoritesTab(),
-                _MessagesTab(),
-                _ProfileTab(),
+            : [
+                const _HomeTab(),
+                const _SearchTab(),
+                const _FavoritesTab(),
+                const NotificationsPage(),
+                const CommunityPage(),
+                const ProfilePage(),
               ],
       ),
       bottomNavigationBar: _buildBottomNavigationBar(isOwner),
@@ -77,9 +84,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                 label: 'Applications',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.chat_bubble_outline),
-                activeIcon: Icon(Icons.chat_bubble),
-                label: 'Messages',
+                icon: Icon(Icons.notifications_outlined),
+                activeIcon: Icon(Icons.notifications),
+                label: 'Notifications',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.people_outline),
+                activeIcon: Icon(Icons.people),
+                label: 'Community',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.person_outline),
@@ -104,9 +116,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                 label: 'Favorites',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.chat_bubble_outline),
-                activeIcon: Icon(Icons.chat_bubble),
-                label: 'Messages',
+                icon: Icon(Icons.notifications_outlined),
+                activeIcon: Icon(Icons.notifications),
+                label: 'Notifications',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.people_outline),
+                activeIcon: Icon(Icons.people),
+                label: 'Community',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.person_outline),
@@ -2141,8 +2158,14 @@ class _ProfileTabState extends ConsumerState<_ProfileTab> {
 }
 
 // Owner-specific tabs
-class _OwnerDashboardTab extends StatelessWidget {
+class _OwnerDashboardTab extends StatefulWidget {
   const _OwnerDashboardTab();
+
+  @override
+  State<_OwnerDashboardTab> createState() => _OwnerDashboardTabState();
+}
+
+class _OwnerDashboardTabState extends State<_OwnerDashboardTab> {
 
   @override
   Widget build(BuildContext context) {
@@ -2178,7 +2201,14 @@ class _OwnerDashboardTab extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const NotificationsPage(),
+                      ),
+                    );
+                  },
                   icon: const Icon(Icons.notifications_outlined),
                 ),
               ],
@@ -2255,6 +2285,34 @@ class _OwnerDashboardTab extends StatelessWidget {
                     'Add Property',
                     Icons.add_home,
                     AppColors.primaryGreen,
+                    () {
+                      _showAddPropertyDialog(context);
+                    },
+                    theme,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildActionCard(
+                    'Upload Photos',
+                    Icons.photo_camera,
+                    Colors.orange,
+                    () {
+                      _showPhotoUploadDialog(context);
+                    },
+                    theme,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildActionCard(
+                    'View Reports',
+                    Icons.analytics,
+                    Colors.blue,
                     () {},
                     theme,
                   ),
@@ -2262,10 +2320,17 @@ class _OwnerDashboardTab extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _buildActionCard(
-                    'View Reports',
-                    Icons.analytics,
-                    Colors.blue,
-                    () {},
+                    'Notifications',
+                    Icons.notifications,
+                    Colors.purple,
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const NotificationsPage(),
+                        ),
+                      );
+                    },
                     theme,
                   ),
                 ),
@@ -2346,6 +2411,96 @@ class _OwnerDashboardTab extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showAddPropertyDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Add New Property'),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              decoration: InputDecoration(
+                labelText: 'Property Title',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              decoration: InputDecoration(
+                labelText: 'Location',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              decoration: InputDecoration(
+                labelText: 'Rent Amount (KES)',
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.number,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Property added successfully!')),
+              );
+            },
+            child: const Text('Add Property'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showPhotoUploadDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Upload Property Photos'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Select property photos to upload:'),
+            const SizedBox(height: 16),
+            ImagePickerWidget(
+              maxImages: 5,
+              title: 'Property Photos',
+              subtitle: 'Add up to 5 photos of your property',
+              onImagesChanged: (images) {
+                // Handle image selection
+                print('Selected ${images.length} images');
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Photos uploaded successfully!')),
+              );
+            },
+            child: const Text('Upload'),
+          ),
+        ],
       ),
     );
   }
