@@ -26,23 +26,18 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage>
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-    
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
-    
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOutBack,
-    ));
-    
+    ).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOutBack),
+    );
+
     _animationController.forward();
   }
 
@@ -55,7 +50,7 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -69,7 +64,7 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 40),
-                  
+
                   // Header
                   Text(
                     'Welcome to HomeVZ',
@@ -86,9 +81,9 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage>
                       height: 1.5,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 60),
-                  
+
                   // Role Cards
                   Expanded(
                     child: Column(
@@ -107,9 +102,9 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage>
                           ],
                           theme: theme,
                         ),
-                        
+
                         const SizedBox(height: 24),
-                        
+
                         _buildRoleCard(
                           role: UserRole.owner,
                           icon: Icons.home_work,
@@ -127,9 +122,9 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage>
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(height: 40),
-                  
+
                   // Continue Button
                   SizedBox(
                     width: double.infinity,
@@ -170,7 +165,7 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage>
     required ThemeData theme,
   }) {
     final isSelected = selectedRole == role;
-    
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -181,7 +176,10 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage>
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primaryGreen.withOpacity(0.1) : AppColors.surface,
+          color:
+              isSelected
+                  ? AppColors.primaryGreen.withOpacity(0.1)
+                  : AppColors.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected ? AppColors.primaryGreen : AppColors.grey200,
@@ -203,9 +201,10 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage>
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: isSelected 
-                        ? AppColors.primaryGreen 
-                        : AppColors.primaryGreen.withOpacity(0.1),
+                    color:
+                        isSelected
+                            ? AppColors.primaryGreen
+                            : AppColors.primaryGreen.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
@@ -223,7 +222,10 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage>
                         title,
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: isSelected ? AppColors.primaryGreen : AppColors.textPrimary,
+                          color:
+                              isSelected
+                                  ? AppColors.primaryGreen
+                                  : AppColors.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -244,31 +246,38 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage>
                   ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Features list
-            ...features.map((feature) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.check,
-                    size: 16,
-                    color: isSelected ? AppColors.primaryGreen : AppColors.textSecondary,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      feature,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
+            ...features
+                .map(
+                  (feature) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.check,
+                          size: 16,
+                          color:
+                              isSelected
+                                  ? AppColors.primaryGreen
+                                  : AppColors.textSecondary,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            feature,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            )).toList(),
+                )
+                .toList(),
           ],
         ),
       ),
@@ -277,18 +286,16 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage>
 
   Future<void> _handleContinue() async {
     if (selectedRole == null) return;
-    
+
     try {
       // Save the selected role
       await ref.read(userProvider.notifier).setUserRole(selectedRole!);
-      
+
       // Navigate to home page
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (context) => const HomePage(),
-          ),
+          MaterialPageRoute(builder: (context) => const HomePage()),
         );
       }
     } catch (e) {

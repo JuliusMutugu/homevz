@@ -14,7 +14,7 @@ class _CreateGroupPageState extends ConsumerState<CreateGroupPage> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _locationController = TextEditingController();
-  
+
   CommunityGroupType _selectedType = CommunityGroupType.nyumbaKumi;
   bool _isPrivate = false;
   bool _isLoading = false;
@@ -35,13 +35,14 @@ class _CreateGroupPageState extends ConsumerState<CreateGroupPage> {
         actions: [
           TextButton(
             onPressed: _isLoading ? null : _createGroup,
-            child: _isLoading
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('Create'),
+            child:
+                _isLoading
+                    ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                    : const Text('Create'),
           ),
         ],
       ),
@@ -73,9 +74,9 @@ class _CreateGroupPageState extends ConsumerState<CreateGroupPage> {
       children: [
         Text(
           'Group Type',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
         ...CommunityGroupType.values.map((type) {
@@ -167,9 +168,9 @@ class _CreateGroupPageState extends ConsumerState<CreateGroupPage> {
           children: [
             Text(
               'Privacy Settings',
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
             SwitchListTile(
@@ -301,19 +302,23 @@ class _CreateGroupPageState extends ConsumerState<CreateGroupPage> {
     setState(() => _isLoading = true);
 
     try {
-      ref.read(communityServiceProvider).createGroup(
-        name: _nameController.text.trim(),
-        description: _descriptionController.text.trim(),
-        type: _selectedType,
-        location: _locationController.text.trim(),
-        isPrivate: _isPrivate,
-      );
+      ref
+          .read(communityServiceProvider)
+          .createGroup(
+            name: _nameController.text.trim(),
+            description: _descriptionController.text.trim(),
+            type: _selectedType,
+            location: _locationController.text.trim(),
+            isPrivate: _isPrivate,
+          );
 
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${_nameController.text.trim()} created successfully!'),
+            content: Text(
+              '${_nameController.text.trim()} created successfully!',
+            ),
             backgroundColor: Colors.green,
           ),
         );

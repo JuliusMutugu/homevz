@@ -80,15 +80,16 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
         decoration: InputDecoration(
           hintText: 'Search groups...',
           prefixIcon: const Icon(Icons.search),
-          suffixIcon: _searchQuery.isNotEmpty
-              ? IconButton(
-                  onPressed: () {
-                    _searchController.clear();
-                    setState(() => _searchQuery = '');
-                  },
-                  icon: const Icon(Icons.clear),
-                )
-              : null,
+          suffixIcon:
+              _searchQuery.isNotEmpty
+                  ? IconButton(
+                    onPressed: () {
+                      _searchController.clear();
+                      setState(() => _searchQuery = '');
+                    },
+                    icon: const Icon(Icons.clear),
+                  )
+                  : null,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(color: Colors.grey[300]!),
@@ -109,12 +110,18 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
     return Consumer(
       builder: (context, ref, child) {
         final userGroups = ref.watch(userGroupsProvider);
-        final filteredGroups = _searchQuery.isEmpty
-            ? userGroups
-            : ref.watch(communityServiceProvider).searchGroups(_searchQuery)
-                .where((group) => group.memberIds.contains(
-                    ref.watch(communityServiceProvider).currentUserId))
-                .toList();
+        final filteredGroups =
+            _searchQuery.isEmpty
+                ? userGroups
+                : ref
+                    .watch(communityServiceProvider)
+                    .searchGroups(_searchQuery)
+                    .where(
+                      (group) => group.memberIds.contains(
+                        ref.watch(communityServiceProvider).currentUserId,
+                      ),
+                    )
+                    .toList();
 
         if (filteredGroups.isEmpty) {
           return _buildEmptyState(
@@ -132,7 +139,10 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
             padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: filteredGroups.length,
             itemBuilder: (context, index) {
-              return _buildGroupCard(filteredGroups[index], showJoinButton: false);
+              return _buildGroupCard(
+                filteredGroups[index],
+                showJoinButton: false,
+              );
             },
           ),
         );
@@ -144,11 +154,16 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
     return Consumer(
       builder: (context, ref, child) {
         final nyumbaKumiGroups = ref.watch(nyumbaKumiGroupsProvider);
-        final filteredGroups = _searchQuery.isEmpty
-            ? nyumbaKumiGroups
-            : ref.watch(communityServiceProvider).searchGroups(_searchQuery)
-                .where((group) => group.type == CommunityGroupType.nyumbaKumi)
-                .toList();
+        final filteredGroups =
+            _searchQuery.isEmpty
+                ? nyumbaKumiGroups
+                : ref
+                    .watch(communityServiceProvider)
+                    .searchGroups(_searchQuery)
+                    .where(
+                      (group) => group.type == CommunityGroupType.nyumbaKumi,
+                    )
+                    .toList();
 
         return Column(
           children: [
@@ -190,19 +205,20 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
               ),
             ),
             Expanded(
-              child: filteredGroups.isEmpty
-                  ? _buildEmptyState(
-                      'No Nyumba Kumi groups found',
-                      'Be the first to create a Nyumba Kumi group in your area',
-                      Icons.security,
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: filteredGroups.length,
-                      itemBuilder: (context, index) {
-                        return _buildGroupCard(filteredGroups[index]);
-                      },
-                    ),
+              child:
+                  filteredGroups.isEmpty
+                      ? _buildEmptyState(
+                        'No Nyumba Kumi groups found',
+                        'Be the first to create a Nyumba Kumi group in your area',
+                        Icons.security,
+                      )
+                      : ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: filteredGroups.length,
+                        itemBuilder: (context, index) {
+                          return _buildGroupCard(filteredGroups[index]);
+                        },
+                      ),
             ),
           ],
         );
@@ -215,17 +231,29 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
       builder: (context, ref, child) {
         final allGroups = ref.watch(communityServiceProvider).groups;
         final currentUserId = ref.watch(communityServiceProvider).currentUserId;
-        
+
         // Show groups the user hasn't joined yet
-        final availableGroups = allGroups
-            .where((group) => !group.memberIds.contains(currentUserId) && !group.isPrivate)
-            .toList();
-        
-        final filteredGroups = _searchQuery.isEmpty
-            ? availableGroups
-            : ref.watch(communityServiceProvider).searchGroups(_searchQuery)
-                .where((group) => !group.memberIds.contains(currentUserId) && !group.isPrivate)
+        final availableGroups =
+            allGroups
+                .where(
+                  (group) =>
+                      !group.memberIds.contains(currentUserId) &&
+                      !group.isPrivate,
+                )
                 .toList();
+
+        final filteredGroups =
+            _searchQuery.isEmpty
+                ? availableGroups
+                : ref
+                    .watch(communityServiceProvider)
+                    .searchGroups(_searchQuery)
+                    .where(
+                      (group) =>
+                          !group.memberIds.contains(currentUserId) &&
+                          !group.isPrivate,
+                    )
+                    .toList();
 
         if (filteredGroups.isEmpty) {
           return _buildEmptyState(
@@ -251,14 +279,22 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
       builder: (context, ref, child) {
         // Mock user location - in real app, get from GPS
         const userLocation = 'Westlands, Nairobi';
-        final nearbyGroups = ref.watch(communityServiceProvider).getNearbyGroups(userLocation);
+        final nearbyGroups = ref
+            .watch(communityServiceProvider)
+            .getNearbyGroups(userLocation);
         final currentUserId = ref.watch(communityServiceProvider).currentUserId;
-        
-        final filteredGroups = _searchQuery.isEmpty
-            ? nearbyGroups
-            : ref.watch(communityServiceProvider).searchGroups(_searchQuery)
-                .where((group) => group.location.toLowerCase().contains('westlands'))
-                .toList();
+
+        final filteredGroups =
+            _searchQuery.isEmpty
+                ? nearbyGroups
+                : ref
+                    .watch(communityServiceProvider)
+                    .searchGroups(_searchQuery)
+                    .where(
+                      (group) =>
+                          group.location.toLowerCase().contains('westlands'),
+                    )
+                    .toList();
 
         return Column(
           children: [
@@ -300,21 +336,27 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
               ),
             ),
             Expanded(
-              child: filteredGroups.isEmpty
-                  ? _buildEmptyState(
-                      'No nearby groups found',
-                      'No community groups found in your area yet',
-                      Icons.location_off,
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: filteredGroups.length,
-                      itemBuilder: (context, index) {
-                        final group = filteredGroups[index];
-                        final isJoined = group.memberIds.contains(currentUserId);
-                        return _buildGroupCard(group, showJoinButton: !isJoined);
-                      },
-                    ),
+              child:
+                  filteredGroups.isEmpty
+                      ? _buildEmptyState(
+                        'No nearby groups found',
+                        'No community groups found in your area yet',
+                        Icons.location_off,
+                      )
+                      : ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: filteredGroups.length,
+                        itemBuilder: (context, index) {
+                          final group = filteredGroups[index];
+                          final isJoined = group.memberIds.contains(
+                            currentUserId,
+                          );
+                          return _buildGroupCard(
+                            group,
+                            showJoinButton: !isJoined,
+                          );
+                        },
+                      ),
             ),
           ],
         );
@@ -437,42 +479,25 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
                   const SizedBox(height: 12),
                   Text(
                     group.description,
-                    style: TextStyle(
-                      color: Colors.grey[700],
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.grey[700], fontSize: 14),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      Icon(
-                        Icons.people,
-                        size: 16,
-                        color: Colors.grey[600],
-                      ),
+                      Icon(Icons.people, size: 16, color: Colors.grey[600]),
                       const SizedBox(width: 4),
                       Text(
                         '${group.memberIds.length} members',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
                       ),
                       const SizedBox(width: 16),
-                      Icon(
-                        Icons.message,
-                        size: 16,
-                        color: Colors.grey[600],
-                      ),
+                      Icon(Icons.message, size: 16, color: Colors.grey[600]),
                       const SizedBox(width: 4),
                       Text(
                         '${group.messageCount} messages',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
                       ),
                       const Spacer(),
                       if (showJoinButton)
@@ -505,11 +530,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              size: 64,
-              color: Colors.grey[400],
-            ),
+            Icon(icon, size: 64, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
               title,
@@ -523,10 +544,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
             const SizedBox(height: 8),
             Text(
               subtitle,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[500],
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
               textAlign: TextAlign.center,
             ),
           ],
@@ -563,55 +581,54 @@ class _CommunityPageState extends ConsumerState<CommunityPage>
 
   void _joinGroup(CommunityGroup group) {
     ref.read(communityServiceProvider).joinGroup(group.id);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Joined ${group.name}')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Joined ${group.name}')));
   }
 
   void _showJoinGroupDialog(CommunityGroup group) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Join ${group.name}'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(group.description),
-            const SizedBox(height: 12),
-            Text(
-              'Location: ${group.location}',
-              style: TextStyle(color: Colors.grey[600]),
+      builder:
+          (context) => AlertDialog(
+            title: Text('Join ${group.name}'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(group.description),
+                const SizedBox(height: 12),
+                Text(
+                  'Location: ${group.location}',
+                  style: TextStyle(color: Colors.grey[600]),
+                ),
+                Text(
+                  'Members: ${group.memberIds.length}',
+                  style: TextStyle(color: Colors.grey[600]),
+                ),
+              ],
             ),
-            Text(
-              'Members: ${group.memberIds.length}',
-              style: TextStyle(color: Colors.grey[600]),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _joinGroup(group);
+                },
+                child: const Text('Join'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _joinGroup(group);
-            },
-            child: const Text('Join'),
-          ),
-        ],
-      ),
     );
   }
 
   void _showCreateGroupDialog() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const CreateGroupPage(),
-      ),
+      MaterialPageRoute(builder: (context) => const CreateGroupPage()),
     );
   }
 }

@@ -49,7 +49,9 @@ class ImageDisplayWidget extends StatelessWidget {
           image: DecorationImage(
             image: FileImage(imageFile!),
             fit: fit,
-            onError: (error, stackTrace) => debugPrint('Error loading file image: $error'),
+            onError:
+                (error, stackTrace) =>
+                    debugPrint('Error loading file image: $error'),
           ),
         ),
       ),
@@ -62,9 +64,7 @@ class ImageDisplayWidget extends StatelessWidget {
       child: Container(
         width: width,
         height: height,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(8),
           child: Image.network(
@@ -95,11 +95,7 @@ class ImageDisplayWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
           ),
           child: const Center(
-            child: Icon(
-              Icons.image,
-              color: Colors.grey,
-              size: 40,
-            ),
+            child: Icon(Icons.image, color: Colors.grey, size: 40),
           ),
         );
   }
@@ -113,11 +109,7 @@ class ImageDisplayWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: const Center(
-        child: Icon(
-          Icons.error_outline,
-          color: Colors.red,
-          size: 40,
-        ),
+        child: Icon(Icons.error_outline, color: Colors.red, size: 40),
       ),
     );
   }
@@ -127,10 +119,9 @@ class ImageDisplayWidget extends StatelessWidget {
       Navigator.push(
         navigatorKey.currentContext!,
         MaterialPageRoute(
-          builder: (context) => FullImageViewer(
-            imageUrl: imageUrl,
-            imageFile: imageFile,
-          ),
+          builder:
+              (context) =>
+                  FullImageViewer(imageUrl: imageUrl, imageFile: imageFile),
         ),
       );
     }
@@ -158,7 +149,7 @@ class ImageGalleryWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final totalImages = imageUrls.length + imageFiles.length;
-    
+
     if (totalImages == 0) {
       return const SizedBox.shrink();
     }
@@ -175,21 +166,22 @@ class ImageGalleryWidget extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: index < imageFiles.length
-                      ? ImageDisplayWidget(
-                          imageFile: imageFiles[index],
-                          width: itemHeight,
-                          height: itemHeight,
-                          enableZoom: enableZoom,
-                          onTap: () => onImageTap?.call(index),
-                        )
-                      : ImageDisplayWidget(
-                          imageUrl: imageUrls[index - imageFiles.length],
-                          width: itemHeight,
-                          height: itemHeight,
-                          enableZoom: enableZoom,
-                          onTap: () => onImageTap?.call(index),
-                        ),
+                  child:
+                      index < imageFiles.length
+                          ? ImageDisplayWidget(
+                            imageFile: imageFiles[index],
+                            width: itemHeight,
+                            height: itemHeight,
+                            enableZoom: enableZoom,
+                            onTap: () => onImageTap?.call(index),
+                          )
+                          : ImageDisplayWidget(
+                            imageUrl: imageUrls[index - imageFiles.length],
+                            width: itemHeight,
+                            height: itemHeight,
+                            enableZoom: enableZoom,
+                            onTap: () => onImageTap?.call(index),
+                          ),
                 ),
                 if (onImageRemove != null)
                   Positioned(
@@ -239,8 +231,10 @@ class FullImageViewer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final totalImages = (imageUrls?.length ?? 0) + (imageFiles?.length ?? 0);
-    
-    if (totalImages > 1 || (imageUrls != null && imageUrls!.isNotEmpty) || (imageFiles != null && imageFiles!.isNotEmpty)) {
+
+    if (totalImages > 1 ||
+        (imageUrls != null && imageUrls!.isNotEmpty) ||
+        (imageFiles != null && imageFiles!.isNotEmpty)) {
       return _buildGalleryView(context);
     } else {
       return _buildSingleImageView(context);
@@ -256,9 +250,10 @@ class FullImageViewer extends StatelessWidget {
       ),
       body: Center(
         child: PhotoView(
-          imageProvider: imageFile != null
-              ? FileImage(imageFile!) as ImageProvider
-              : NetworkImage(imageUrl!),
+          imageProvider:
+              imageFile != null
+                  ? FileImage(imageFile!) as ImageProvider
+                  : NetworkImage(imageUrl!),
           backgroundDecoration: const BoxDecoration(color: Colors.black),
           minScale: PhotoViewComputedScale.contained,
           maxScale: PhotoViewComputedScale.covered * 3,
@@ -269,7 +264,7 @@ class FullImageViewer extends StatelessWidget {
 
   Widget _buildGalleryView(BuildContext context) {
     final totalImages = (imageUrls?.length ?? 0) + (imageFiles?.length ?? 0);
-    
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -285,7 +280,7 @@ class FullImageViewer extends StatelessWidget {
         pageController: PageController(initialPage: initialIndex),
         builder: (context, index) {
           ImageProvider imageProvider;
-          
+
           if (imageFiles != null && index < imageFiles!.length) {
             imageProvider = FileImage(imageFiles![index]);
           } else if (imageUrls != null) {
@@ -294,7 +289,7 @@ class FullImageViewer extends StatelessWidget {
           } else {
             imageProvider = const AssetImage('assets/images/placeholder.png');
           }
-          
+
           return PhotoViewGalleryPageOptions(
             imageProvider: imageProvider,
             minScale: PhotoViewComputedScale.contained,

@@ -13,7 +13,7 @@ class UserTypeSelectionPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -22,7 +22,7 @@ class UserTypeSelectionPage extends ConsumerWidget {
           child: Column(
             children: [
               const SizedBox(height: 40),
-              
+
               // Logo and welcome text
               Icon(
                 Icons.home_outlined,
@@ -30,7 +30,7 @@ class UserTypeSelectionPage extends ConsumerWidget {
                 color: AppColors.primaryGreen,
               ),
               const SizedBox(height: 24),
-              
+
               Text(
                 'Welcome to HomeVZ',
                 style: theme.textTheme.headlineMedium?.copyWith(
@@ -40,7 +40,7 @@ class UserTypeSelectionPage extends ConsumerWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
-              
+
               Text(
                 'Your trusted housing solution in Kenya',
                 style: theme.textTheme.bodyLarge?.copyWith(
@@ -49,7 +49,7 @@ class UserTypeSelectionPage extends ConsumerWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 60),
-              
+
               Text(
                 'I want to:',
                 style: theme.textTheme.titleLarge?.copyWith(
@@ -59,7 +59,7 @@ class UserTypeSelectionPage extends ConsumerWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
-              
+
               // User type selection cards
               Expanded(
                 child: Column(
@@ -69,50 +69,57 @@ class UserTypeSelectionPage extends ConsumerWidget {
                       ref: ref,
                       userType: UserType.tenant,
                       title: 'Find a Home',
-                      subtitle: 'Search for rental properties, view listings, and connect with landlords',
+                      subtitle:
+                          'Search for rental properties, view listings, and connect with landlords',
                       icon: Icons.search_outlined,
                       features: [
                         'Browse property listings',
                         'Schedule property tours',
                         'Chat with landlords',
                         'Apply for properties',
-                        'Pay rent via M-Pesa'
+                        'Pay rent via M-Pesa',
                       ],
                     ),
                     const SizedBox(height: 24),
-                    
+
                     _buildUserTypeCard(
                       context: context,
                       ref: ref,
                       userType: UserType.landlord,
                       title: 'List My Property',
-                      subtitle: 'Manage properties, find tenants, and grow your real estate business',
+                      subtitle:
+                          'Manage properties, find tenants, and grow your real estate business',
                       icon: Icons.business_outlined,
                       features: [
                         'List properties for rent/sale',
                         'Manage tenant applications',
                         'Collect rent payments',
                         'Property analytics',
-                        'Tenant communication'
+                        'Tenant communication',
                       ],
                     ),
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Continue button
               Consumer(
                 builder: (context, ref, child) {
                   final selectedUserType = ref.watch(tempUserTypeProvider);
-                  
+
                   return SizedBox(
                     width: double.infinity,
                     child: FilledButton(
-                      onPressed: selectedUserType != null 
-                        ? () => _continueWithUserType(context, ref, selectedUserType)
-                        : null,
+                      onPressed:
+                          selectedUserType != null
+                              ? () => _continueWithUserType(
+                                context,
+                                ref,
+                                selectedUserType,
+                              )
+                              : null,
                       style: FilledButton.styleFrom(
                         backgroundColor: AppColors.primaryGreen,
                         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -150,7 +157,7 @@ class UserTypeSelectionPage extends ConsumerWidget {
     final theme = Theme.of(context);
     final selectedUserType = ref.watch(tempUserTypeProvider);
     final isSelected = selectedUserType == userType;
-    
+
     return Expanded(
       child: GestureDetector(
         onTap: () => ref.read(tempUserTypeProvider.notifier).state = userType,
@@ -159,7 +166,10 @@ class UserTypeSelectionPage extends ConsumerWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.primaryGreen.withOpacity(0.1) : AppColors.surface,
+            color:
+                isSelected
+                    ? AppColors.primaryGreen.withOpacity(0.1)
+                    : AppColors.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: isSelected ? AppColors.primaryGreen : AppColors.grey300,
@@ -182,9 +192,10 @@ class UserTypeSelectionPage extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: isSelected 
-                        ? AppColors.primaryGreen 
-                        : AppColors.primaryGreen.withOpacity(0.1),
+                      color:
+                          isSelected
+                              ? AppColors.primaryGreen
+                              : AppColors.primaryGreen.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
@@ -202,9 +213,10 @@ class UserTypeSelectionPage extends ConsumerWidget {
                           title,
                           style: theme.textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: isSelected 
-                              ? AppColors.primaryGreen 
-                              : AppColors.textPrimary,
+                            color:
+                                isSelected
+                                    ? AppColors.primaryGreen
+                                    : AppColors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -226,31 +238,36 @@ class UserTypeSelectionPage extends ConsumerWidget {
                 ],
               ),
               const SizedBox(height: 16),
-              
+
               // Features list
-              ...features.map((feature) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.check,
-                      color: isSelected 
-                        ? AppColors.primaryGreen 
-                        : AppColors.grey400,
-                      size: 16,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        feature,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
+              ...features
+                  .map(
+                    (feature) => Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.check,
+                            color:
+                                isSelected
+                                    ? AppColors.primaryGreen
+                                    : AppColors.grey400,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              feature,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              )).toList(),
+                  )
+                  .toList(),
             ],
           ),
         ),
@@ -258,25 +275,27 @@ class UserTypeSelectionPage extends ConsumerWidget {
     );
   }
 
-  void _continueWithUserType(BuildContext context, WidgetRef ref, UserType userType) {
+  void _continueWithUserType(
+    BuildContext context,
+    WidgetRef ref,
+    UserType userType,
+  ) {
     // Set the user type in the main provider
     ref.read(userTypeProvider.notifier).setUserType(userType);
-    
+
     // Navigate to auth page with the selected user type
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-        builder: (context) => const AuthPage(),
-      ),
+      MaterialPageRoute(builder: (context) => const AuthPage()),
     );
-    
+
     // Show confirmation
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          userType == UserType.tenant 
-            ? 'Welcome future tenant! Let\'s find your perfect home.'
-            : 'Welcome property owner! Let\'s grow your business.',
+          userType == UserType.tenant
+              ? 'Welcome future tenant! Let\'s find your perfect home.'
+              : 'Welcome property owner! Let\'s grow your business.',
         ),
         backgroundColor: AppColors.primaryGreen,
       ),

@@ -19,7 +19,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   final _phoneController = TextEditingController();
   final _addressController = TextEditingController();
   final _bioController = TextEditingController();
-  
+
   File? _profileImage;
   bool _isEditing = false;
   bool _isLoading = false;
@@ -66,42 +66,44 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           if (_isEditing)
             TextButton(
               onPressed: _isLoading ? null : _saveProfile,
-              child: _isLoading
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Save'),
+              child:
+                  _isLoading
+                      ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                      : const Text('Save'),
             ),
         ],
       ),
       body: userAsync.when(
-        data: (user) => Form(
-          key: _formKey,
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              _buildProfileHeader(user),
-              const SizedBox(height: 24),
-              _buildPersonalInfoSection(),
-              const SizedBox(height: 24),
-              _buildContactInfoSection(),
-              const SizedBox(height: 24),
-              _buildPreferencesSection(),
-              const SizedBox(height: 24),
-              _buildActionsSection(),
-              if (_isEditing) ...[
-                const SizedBox(height: 24),
-                _buildSaveButtons(),
-              ],
-            ],
-          ),
-        ),
+        data:
+            (user) => Form(
+              key: _formKey,
+              child: ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  _buildProfileHeader(user),
+                  const SizedBox(height: 24),
+                  _buildPersonalInfoSection(),
+                  const SizedBox(height: 24),
+                  _buildContactInfoSection(),
+                  const SizedBox(height: 24),
+                  _buildPreferencesSection(),
+                  const SizedBox(height: 24),
+                  _buildActionsSection(),
+                  if (_isEditing) ...[
+                    const SizedBox(height: 24),
+                    _buildSaveButtons(),
+                  ],
+                ],
+              ),
+            ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: Text('Error loading profile: $error'),
-        ),
+        error:
+            (error, stack) =>
+                Center(child: Text('Error loading profile: $error')),
       ),
     );
   }
@@ -124,7 +126,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         children: [
           ProfileImagePicker(
             initialImage: _profileImage,
-            onImageChanged: (file) => _isEditing ? setState(() => _profileImage = file) : null,
+            onImageChanged:
+                (file) =>
+                    _isEditing ? setState(() => _profileImage = file) : null,
             size: 100,
           ),
           const SizedBox(height: 16),
@@ -378,9 +382,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         Expanded(
           child: ElevatedButton(
             onPressed: _isLoading ? null : _saveProfile,
-            child: _isLoading
-                ? const CircularProgressIndicator()
-                : const Text('Save Changes'),
+            child:
+                _isLoading
+                    ? const CircularProgressIndicator()
+                    : const Text('Save Changes'),
           ),
         ),
       ],
@@ -395,7 +400,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     try {
       // Simulate saving
       await Future.delayed(const Duration(seconds: 1));
-      
+
       setState(() {
         _isEditing = false;
         _isLoading = false;
@@ -421,102 +426,105 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   void _showLanguageSelector() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Select Language'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              title: const Text('English'),
-              leading: Radio<String>(
-                value: 'en',
-                groupValue: 'en',
-                onChanged: (value) => Navigator.pop(context),
-              ),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Select Language'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  title: const Text('English'),
+                  leading: Radio<String>(
+                    value: 'en',
+                    groupValue: 'en',
+                    onChanged: (value) => Navigator.pop(context),
+                  ),
+                ),
+                ListTile(
+                  title: const Text('Swahili'),
+                  leading: Radio<String>(
+                    value: 'sw',
+                    groupValue: 'en',
+                    onChanged: (value) => Navigator.pop(context),
+                  ),
+                ),
+              ],
             ),
-            ListTile(
-              title: const Text('Swahili'),
-              leading: Radio<String>(
-                value: 'sw',
-                groupValue: 'en',
-                onChanged: (value) => Navigator.pop(context),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
               ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            ],
           ),
-        ],
-      ),
     );
   }
 
   void _showChangePasswordDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Change Password'),
-        content: const Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              decoration: InputDecoration(labelText: 'Current Password'),
-              obscureText: true,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Change Password'),
+            content: const Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  decoration: InputDecoration(labelText: 'Current Password'),
+                  obscureText: true,
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  decoration: InputDecoration(labelText: 'New Password'),
+                  obscureText: true,
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  decoration: InputDecoration(labelText: 'Confirm Password'),
+                  obscureText: true,
+                ),
+              ],
             ),
-            SizedBox(height: 16),
-            TextField(
-              decoration: InputDecoration(labelText: 'New Password'),
-              obscureText: true,
-            ),
-            SizedBox(height: 16),
-            TextField(
-              decoration: InputDecoration(labelText: 'Confirm Password'),
-              obscureText: true,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Change'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Change'),
-          ),
-        ],
-      ),
     );
   }
 
   void _showHelpDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Help & Support'),
-        content: const Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Need help? Contact us:'),
-            SizedBox(height: 8),
-            Text('Email: support@homevz.co.ke'),
-            Text('Phone: +254 700 123 456'),
-            Text('WhatsApp: +254 700 123 456'),
-            SizedBox(height: 16),
-            Text('Office Hours: Monday - Friday, 8AM - 6PM'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Help & Support'),
+            content: const Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Need help? Contact us:'),
+                SizedBox(height: 8),
+                Text('Email: support@homevz.co.ke'),
+                Text('Phone: +254 700 123 456'),
+                Text('WhatsApp: +254 700 123 456'),
+                SizedBox(height: 16),
+                Text('Office Hours: Monday - Friday, 8AM - 6PM'),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Close'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -537,27 +545,28 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   void _showSignOutDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Sign Out'),
-        content: const Text('Are you sure you want to sign out?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Sign Out'),
+            content: const Text('Are you sure you want to sign out?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  // TODO: Implement sign out logic
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Signed out successfully')),
+                  );
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                child: const Text('Sign Out'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // TODO: Implement sign out logic
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Signed out successfully')),
-              );
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Sign Out'),
-          ),
-        ],
-      ),
     );
   }
 }

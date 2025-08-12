@@ -215,7 +215,7 @@ class NotificationService extends ChangeNotifier {
       timestamp: DateTime.now(),
       data: data,
     );
-    
+
     addNotification(notification);
   }
 
@@ -246,7 +246,8 @@ class NotificationService extends ChangeNotifier {
   }) {
     simulateNewNotification(
       title: 'Payment Received',
-      body: 'KES ${amount.toStringAsFixed(0)} received from $tenantName for $propertyTitle',
+      body:
+          'KES ${amount.toStringAsFixed(0)} received from $tenantName for $propertyTitle',
       type: NotificationType.payment,
       data: {
         'amount': amount,
@@ -282,19 +283,17 @@ class NotificationService extends ChangeNotifier {
       title: 'Community Update',
       body: 'New message in $groupName: $message',
       type: NotificationType.community,
-      data: {
-        'groupName': groupName,
-        'groupId': groupId,
-        'message': message,
-      },
+      data: {'groupName': groupName, 'groupId': groupId, 'message': message},
     );
   }
 }
 
 // Provider for notification service
-final notificationServiceProvider = ChangeNotifierProvider<NotificationService>((ref) {
-  return NotificationService();
-});
+final notificationServiceProvider = ChangeNotifierProvider<NotificationService>(
+  (ref) {
+    return NotificationService();
+  },
+);
 
 // Provider for notifications list
 final notificationsProvider = Provider<List<AppNotification>>((ref) {
@@ -312,6 +311,9 @@ final unreadNotificationsProvider = Provider<List<AppNotification>>((ref) {
 });
 
 // Provider for notifications by type
-final notificationsByTypeProvider = Provider.family<List<AppNotification>, NotificationType>((ref, type) {
-  return ref.watch(notificationServiceProvider).getNotificationsByType(type);
-});
+final notificationsByTypeProvider =
+    Provider.family<List<AppNotification>, NotificationType>((ref, type) {
+      return ref
+          .watch(notificationServiceProvider)
+          .getNotificationsByType(type);
+    });

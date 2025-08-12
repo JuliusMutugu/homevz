@@ -46,18 +46,18 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
         if (widget.title != null) ...[
           Text(
             widget.title!,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 4),
         ],
         if (widget.subtitle != null) ...[
           Text(
             widget.subtitle!,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.grey[600],
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
           ),
           const SizedBox(height: 12),
         ],
@@ -127,10 +127,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
             const SizedBox(height: 4),
             Text(
               'Tap to select from camera or gallery',
-              style: TextStyle(
-                color: Colors.grey[500],
-                fontSize: 12,
-              ),
+              style: TextStyle(color: Colors.grey[500], fontSize: 12),
             ),
           ],
         ),
@@ -142,11 +139,12 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
-      children: _selectedImages.asMap().entries.map((entry) {
-        final index = entry.key;
-        final image = entry.value;
-        return _buildImageItem(image, index);
-      }).toList(),
+      children:
+          _selectedImages.asMap().entries.map((entry) {
+            final index = entry.key;
+            final image = entry.value;
+            return _buildImageItem(image, index);
+          }).toList(),
     );
   }
 
@@ -158,10 +156,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
           height: 80,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
-            image: DecorationImage(
-              image: FileImage(image),
-              fit: BoxFit.cover,
-            ),
+            image: DecorationImage(image: FileImage(image), fit: BoxFit.cover),
           ),
         ),
         Positioned(
@@ -175,11 +170,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
                 color: Colors.red,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.close,
-                color: Colors.white,
-                size: 14,
-              ),
+              child: const Icon(Icons.close, color: Colors.white, size: 14),
             ),
           ),
         ),
@@ -192,7 +183,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
       onPressed: _showImageSourceDialog,
       icon: const Icon(Icons.add),
       label: Text(
-        widget.allowMultiple 
+        widget.allowMultiple
             ? 'Add More Photos (${_selectedImages.length}/${widget.maxImages})'
             : 'Add Photo',
       ),
@@ -205,30 +196,32 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
   Future<void> _showImageSourceDialog() async {
     final source = await showDialog<ImageSource>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Select Image Source'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text('Camera'),
-              onTap: () => Navigator.pop(context, ImageSource.camera),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Select Image Source'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.camera_alt),
+                  title: const Text('Camera'),
+                  onTap: () => Navigator.pop(context, ImageSource.camera),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.photo_library),
+                  title: const Text('Gallery'),
+                  onTap: () => Navigator.pop(context, ImageSource.gallery),
+                ),
+                if (widget.allowMultiple &&
+                    _selectedImages.length < widget.maxImages)
+                  ListTile(
+                    leading: const Icon(Icons.photo_library_outlined),
+                    title: const Text('Multiple from Gallery'),
+                    onTap: () => Navigator.pop(context, 'multiple'),
+                  ),
+              ],
             ),
-            ListTile(
-              leading: const Icon(Icons.photo_library),
-              title: const Text('Gallery'),
-              onTap: () => Navigator.pop(context, ImageSource.gallery),
-            ),
-            if (widget.allowMultiple && _selectedImages.length < widget.maxImages)
-              ListTile(
-                leading: const Icon(Icons.photo_library_outlined),
-                title: const Text('Multiple from Gallery'),
-                onTap: () => Navigator.pop(context, 'multiple'),
-              ),
-          ],
-        ),
-      ),
+          ),
     );
 
     if (source != null) {
@@ -292,7 +285,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
 
       if (files.isNotEmpty) {
         final validFiles = <File>[];
-        
+
         for (final file in files) {
           if (ImageUploadService.isValidImage(file)) {
             if (ImageUploadService.isFileSizeValid(file, maxSizeMB: 5.0)) {
@@ -328,10 +321,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
 
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-      ),
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
     );
   }
 }
@@ -381,26 +371,31 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
                 width: 2,
               ),
             ),
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : ClipOval(
-                    child: _selectedImage != null
-                        ? Image.file(
-                            _selectedImage!,
-                            fit: BoxFit.cover,
-                            width: widget.size,
-                            height: widget.size,
-                          )
-                        : widget.initialImageUrl != null && widget.initialImageUrl!.isNotEmpty
-                            ? Image.network(
+            child:
+                _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : ClipOval(
+                      child:
+                          _selectedImage != null
+                              ? Image.file(
+                                _selectedImage!,
+                                fit: BoxFit.cover,
+                                width: widget.size,
+                                height: widget.size,
+                              )
+                              : widget.initialImageUrl != null &&
+                                  widget.initialImageUrl!.isNotEmpty
+                              ? Image.network(
                                 widget.initialImageUrl!,
                                 fit: BoxFit.cover,
                                 width: widget.size,
                                 height: widget.size,
-                                errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
+                                errorBuilder:
+                                    (context, error, stackTrace) =>
+                                        _buildPlaceholder(),
                               )
-                            : _buildPlaceholder(),
-                  ),
+                              : _buildPlaceholder(),
+                    ),
           ),
           Positioned(
             bottom: 0,
@@ -425,11 +420,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
   }
 
   Widget _buildPlaceholder() {
-    return Icon(
-      Icons.person,
-      size: widget.size * 0.6,
-      color: Colors.grey,
-    );
+    return Icon(Icons.person, size: widget.size * 0.6, color: Colors.grey);
   }
 
   Future<void> _showImageSourceDialog() async {
@@ -473,10 +464,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
 
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-      ),
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
     );
   }
 }

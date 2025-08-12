@@ -73,7 +73,9 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage>
               onPressed: () {
                 notificationService.markAllAsRead();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('All notifications marked as read')),
+                  const SnackBar(
+                    content: Text('All notifications marked as read'),
+                  ),
                 );
               },
               child: const Text('Mark All Read'),
@@ -89,28 +91,29 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage>
                   break;
               }
             },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'clear_all',
-                child: Row(
-                  children: [
-                    Icon(Icons.clear_all),
-                    SizedBox(width: 8),
-                    Text('Clear All'),
-                  ],
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'test_notification',
-                child: Row(
-                  children: [
-                    Icon(Icons.add_alert),
-                    SizedBox(width: 8),
-                    Text('Test Notification'),
-                  ],
-                ),
-              ),
-            ],
+            itemBuilder:
+                (context) => [
+                  const PopupMenuItem(
+                    value: 'clear_all',
+                    child: Row(
+                      children: [
+                        Icon(Icons.clear_all),
+                        SizedBox(width: 8),
+                        Text('Clear All'),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'test_notification',
+                    child: Row(
+                      children: [
+                        Icon(Icons.add_alert),
+                        SizedBox(width: 8),
+                        Text('Test Notification'),
+                      ],
+                    ),
+                  ),
+                ],
           ),
         ],
         bottom: TabBar(
@@ -136,7 +139,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage>
     return Consumer(
       builder: (context, ref, child) {
         final notifications = ref.watch(notificationsProvider);
-        
+
         if (notifications.isEmpty) {
           return _buildEmptyState('No notifications yet');
         }
@@ -162,9 +165,11 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage>
     return Consumer(
       builder: (context, ref, child) {
         final notifications = ref.watch(notificationsByTypeProvider(type));
-        
+
         if (notifications.isEmpty) {
-          return _buildEmptyState('No ${_tabLabels[type]?.toLowerCase()} notifications');
+          return _buildEmptyState(
+            'No ${_tabLabels[type]?.toLowerCase()} notifications',
+          );
         }
 
         return RefreshIndicator(
@@ -188,18 +193,11 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.notifications_none,
-            size: 64,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.notifications_none, size: 64, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
             message,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
           ),
         ],
       ),
@@ -214,35 +212,37 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage>
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
         color: Colors.red,
-        child: const Icon(
-          Icons.delete,
-          color: Colors.white,
-        ),
+        child: const Icon(Icons.delete, color: Colors.white),
       ),
       confirmDismiss: (direction) async {
         return await showDialog<bool>(
           context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Delete Notification'),
-            content: const Text('Are you sure you want to delete this notification?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel'),
+          builder:
+              (context) => AlertDialog(
+                title: const Text('Delete Notification'),
+                content: const Text(
+                  'Are you sure you want to delete this notification?',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    child: const Text('Delete'),
+                  ),
+                ],
               ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text('Delete'),
-              ),
-            ],
-          ),
         );
       },
       onDismissed: (direction) {
-        ref.read(notificationServiceProvider).deleteNotification(notification.id);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Notification deleted')),
-        );
+        ref
+            .read(notificationServiceProvider)
+            .deleteNotification(notification.id);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Notification deleted')));
       },
       child: Card(
         margin: const EdgeInsets.only(bottom: 12),
@@ -262,7 +262,9 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage>
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: _getNotificationColor(notification.type).withOpacity(0.1),
+                    color: _getNotificationColor(
+                      notification.type,
+                    ).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -282,9 +284,10 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage>
                             child: Text(
                               notification.title,
                               style: TextStyle(
-                                fontWeight: notification.isRead 
-                                    ? FontWeight.normal 
-                                    : FontWeight.bold,
+                                fontWeight:
+                                    notification.isRead
+                                        ? FontWeight.normal
+                                        : FontWeight.bold,
                                 fontSize: 16,
                               ),
                             ),
@@ -303,18 +306,12 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage>
                       const SizedBox(height: 4),
                       Text(
                         notification.body,
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 14),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         timeago.format(notification.timestamp),
-                        style: TextStyle(
-                          color: Colors.grey[500],
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.grey[500], fontSize: 12),
                       ),
                     ],
                   ),
@@ -393,67 +390,68 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage>
   void _showNotificationDetails(AppNotification notification) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(notification.title),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(notification.body),
-            const SizedBox(height: 16),
-            Text(
-              'Received: ${timeago.format(notification.timestamp)}',
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 12,
-              ),
-            ),
-            if (notification.data != null) ...[
-              const SizedBox(height: 16),
-              const Text('Additional Info:'),
-              const SizedBox(height: 8),
-              ...notification.data!.entries.map(
-                (entry) => Text(
-                  '${entry.key}: ${entry.value}',
-                  style: const TextStyle(fontSize: 12),
+      builder:
+          (context) => AlertDialog(
+            title: Text(notification.title),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(notification.body),
+                const SizedBox(height: 16),
+                Text(
+                  'Received: ${timeago.format(notification.timestamp)}',
+                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
                 ),
+                if (notification.data != null) ...[
+                  const SizedBox(height: 16),
+                  const Text('Additional Info:'),
+                  const SizedBox(height: 8),
+                  ...notification.data!.entries.map(
+                    (entry) => Text(
+                      '${entry.key}: ${entry.value}',
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Close'),
               ),
             ],
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
           ),
-        ],
-      ),
     );
   }
 
   void _showClearAllDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Clear All Notifications'),
-        content: const Text('Are you sure you want to clear all notifications? This action cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Clear All Notifications'),
+            content: const Text(
+              'Are you sure you want to clear all notifications? This action cannot be undone.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  ref.read(notificationServiceProvider).clearAllNotifications();
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('All notifications cleared')),
+                  );
+                },
+                child: const Text('Clear All'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () {
-              ref.read(notificationServiceProvider).clearAllNotifications();
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('All notifications cleared')),
-              );
-            },
-            child: const Text('Clear All'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -487,8 +485,8 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage>
     final randomIndex = DateTime.now().millisecond % testTypes.length;
     testTypes[randomIndex]();
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Test notification created')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Test notification created')));
   }
 }

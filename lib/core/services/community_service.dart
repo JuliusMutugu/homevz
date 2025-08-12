@@ -1,20 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-enum CommunityGroupType {
-  nyumbaKumi,
-  estate,
-  neighborhood,
-  building,
-}
+enum CommunityGroupType { nyumbaKumi, estate, neighborhood, building }
 
-enum MessageType {
-  text,
-  image,
-  document,
-  announcement,
-  poll,
-}
+enum MessageType { text, image, document, announcement, poll }
 
 class CommunityGroup {
   final String id;
@@ -150,10 +139,18 @@ class CommunityService extends ChangeNotifier {
       CommunityGroup(
         id: 'nk_westlands_001',
         name: 'Westlands Nyumba Kumi',
-        description: 'Community safety and neighborhood watch for Westlands area',
+        description:
+            'Community safety and neighborhood watch for Westlands area',
         type: CommunityGroupType.nyumbaKumi,
         createdAt: DateTime.now().subtract(const Duration(days: 30)),
-        memberIds: ['user_1', 'user_2', 'user_3', 'user_4', 'user_5', _currentUserId],
+        memberIds: [
+          'user_1',
+          'user_2',
+          'user_3',
+          'user_4',
+          'user_5',
+          _currentUserId,
+        ],
         adminIds: ['user_1', _currentUserId],
         location: 'Westlands, Nairobi',
         messageCount: 15,
@@ -208,7 +205,8 @@ class CommunityService extends ChangeNotifier {
         groupId: westlandsGroupId,
         senderId: 'user_1',
         senderName: 'Samuel Wanjiku',
-        content: 'Good evening everyone. Just wanted to remind you about our security meeting tomorrow at 6 PM at the community center.',
+        content:
+            'Good evening everyone. Just wanted to remind you about our security meeting tomorrow at 6 PM at the community center.',
         type: MessageType.announcement,
         timestamp: DateTime.now().subtract(const Duration(hours: 2)),
         isAnnouncement: true,
@@ -219,9 +217,12 @@ class CommunityService extends ChangeNotifier {
         groupId: westlandsGroupId,
         senderId: 'user_2',
         senderName: 'Mary Njoki',
-        content: 'Thank you for the reminder Samuel. Will there be any agenda shared beforehand?',
+        content:
+            'Thank you for the reminder Samuel. Will there be any agenda shared beforehand?',
         type: MessageType.text,
-        timestamp: DateTime.now().subtract(const Duration(hours: 1, minutes: 45)),
+        timestamp: DateTime.now().subtract(
+          const Duration(hours: 1, minutes: 45),
+        ),
         readBy: [_currentUserId],
       ),
       CommunityMessage(
@@ -229,9 +230,12 @@ class CommunityService extends ChangeNotifier {
         groupId: westlandsGroupId,
         senderId: 'user_3',
         senderName: 'John Kimani',
-        content: 'I spotted some suspicious activity near the shopping center yesterday evening. Two individuals on a motorbike were checking out parked cars.',
+        content:
+            'I spotted some suspicious activity near the shopping center yesterday evening. Two individuals on a motorbike were checking out parked cars.',
         type: MessageType.text,
-        timestamp: DateTime.now().subtract(const Duration(hours: 1, minutes: 30)),
+        timestamp: DateTime.now().subtract(
+          const Duration(hours: 1, minutes: 30),
+        ),
         readBy: [_currentUserId],
       ),
       CommunityMessage(
@@ -239,9 +243,12 @@ class CommunityService extends ChangeNotifier {
         groupId: westlandsGroupId,
         senderId: _currentUserId,
         senderName: 'You',
-        content: 'Thanks for sharing John. Did you manage to get their number plate or any other details?',
+        content:
+            'Thanks for sharing John. Did you manage to get their number plate or any other details?',
         type: MessageType.text,
-        timestamp: DateTime.now().subtract(const Duration(hours: 1, minutes: 15)),
+        timestamp: DateTime.now().subtract(
+          const Duration(hours: 1, minutes: 15),
+        ),
         readBy: ['user_1', 'user_2', 'user_3'],
       ),
       CommunityMessage(
@@ -249,7 +256,8 @@ class CommunityService extends ChangeNotifier {
         groupId: westlandsGroupId,
         senderId: 'user_4',
         senderName: 'Grace Achieng',
-        content: 'I\'ll be attending the meeting tomorrow. We also need to discuss the broken street light on Muthithi Road.',
+        content:
+            'I\'ll be attending the meeting tomorrow. We also need to discuss the broken street light on Muthithi Road.',
         type: MessageType.text,
         timestamp: DateTime.now().subtract(const Duration(minutes: 45)),
         readBy: [],
@@ -266,7 +274,9 @@ class CommunityService extends ChangeNotifier {
 
   // Get user's groups
   List<CommunityGroup> getUserGroups() {
-    return _groups.where((group) => group.memberIds.contains(_currentUserId)).toList();
+    return _groups
+        .where((group) => group.memberIds.contains(_currentUserId))
+        .toList();
   }
 
   // Get messages for a group
@@ -316,11 +326,14 @@ class CommunityService extends ChangeNotifier {
   // Join a group
   void joinGroup(String groupId) {
     final groupIndex = _groups.indexWhere((g) => g.id == groupId);
-    if (groupIndex != -1 && !_groups[groupIndex].memberIds.contains(_currentUserId)) {
+    if (groupIndex != -1 &&
+        !_groups[groupIndex].memberIds.contains(_currentUserId)) {
       final updatedMembers = List<String>.from(_groups[groupIndex].memberIds);
       updatedMembers.add(_currentUserId);
-      
-      _groups[groupIndex] = _groups[groupIndex].copyWith(memberIds: updatedMembers);
+
+      _groups[groupIndex] = _groups[groupIndex].copyWith(
+        memberIds: updatedMembers,
+      );
       notifyListeners();
     }
   }
@@ -328,11 +341,14 @@ class CommunityService extends ChangeNotifier {
   // Leave a group
   void leaveGroup(String groupId) {
     final groupIndex = _groups.indexWhere((g) => g.id == groupId);
-    if (groupIndex != -1 && _groups[groupIndex].memberIds.contains(_currentUserId)) {
+    if (groupIndex != -1 &&
+        _groups[groupIndex].memberIds.contains(_currentUserId)) {
       final updatedMembers = List<String>.from(_groups[groupIndex].memberIds);
       updatedMembers.remove(_currentUserId);
-      
-      _groups[groupIndex] = _groups[groupIndex].copyWith(memberIds: updatedMembers);
+
+      _groups[groupIndex] = _groups[groupIndex].copyWith(
+        memberIds: updatedMembers,
+      );
       notifyListeners();
     }
   }
@@ -368,7 +384,7 @@ class CommunityService extends ChangeNotifier {
     final messages = _groupMessages[groupId];
     if (messages != null) {
       for (int i = 0; i < messages.length; i++) {
-        if (messageIds.contains(messages[i].id) && 
+        if (messageIds.contains(messages[i].id) &&
             !messages[i].readBy.contains(_currentUserId)) {
           final updatedReadBy = List<String>.from(messages[i].readBy);
           updatedReadBy.add(_currentUserId);
@@ -382,34 +398,45 @@ class CommunityService extends ChangeNotifier {
   // Get unread message count for a group
   int getUnreadMessageCount(String groupId) {
     final messages = _groupMessages[groupId] ?? [];
-    return messages.where((msg) => 
-      msg.senderId != _currentUserId && 
-      !msg.readBy.contains(_currentUserId)
-    ).length;
+    return messages
+        .where(
+          (msg) =>
+              msg.senderId != _currentUserId &&
+              !msg.readBy.contains(_currentUserId),
+        )
+        .length;
   }
 
   // Search groups
   List<CommunityGroup> searchGroups(String query) {
     if (query.isEmpty) return _groups;
-    
-    return _groups.where((group) =>
-      group.name.toLowerCase().contains(query.toLowerCase()) ||
-      group.description.toLowerCase().contains(query.toLowerCase()) ||
-      group.location.toLowerCase().contains(query.toLowerCase())
-    ).toList();
+
+    return _groups
+        .where(
+          (group) =>
+              group.name.toLowerCase().contains(query.toLowerCase()) ||
+              group.description.toLowerCase().contains(query.toLowerCase()) ||
+              group.location.toLowerCase().contains(query.toLowerCase()),
+        )
+        .toList();
   }
 
   // Get nearby groups (mock implementation)
   List<CommunityGroup> getNearbyGroups(String userLocation) {
     // In a real app, this would use geolocation and filtering
-    return _groups.where((group) => 
-      group.location.toLowerCase().contains(userLocation.toLowerCase())
-    ).toList();
+    return _groups
+        .where(
+          (group) =>
+              group.location.toLowerCase().contains(userLocation.toLowerCase()),
+        )
+        .toList();
   }
 }
 
 // Providers
-final communityServiceProvider = ChangeNotifierProvider<CommunityService>((ref) {
+final communityServiceProvider = ChangeNotifierProvider<CommunityService>((
+  ref,
+) {
   return CommunityService();
 });
 
@@ -418,10 +445,15 @@ final userGroupsProvider = Provider<List<CommunityGroup>>((ref) {
 });
 
 final nyumbaKumiGroupsProvider = Provider<List<CommunityGroup>>((ref) {
-  return ref.watch(communityServiceProvider).getGroupsByType(CommunityGroupType.nyumbaKumi);
+  return ref
+      .watch(communityServiceProvider)
+      .getGroupsByType(CommunityGroupType.nyumbaKumi);
 });
 
-final groupMessagesProvider = Provider.family<List<CommunityMessage>, String>((ref, groupId) {
+final groupMessagesProvider = Provider.family<List<CommunityMessage>, String>((
+  ref,
+  groupId,
+) {
   return ref.watch(communityServiceProvider).getGroupMessages(groupId);
 });
 

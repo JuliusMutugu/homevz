@@ -8,15 +8,11 @@ import 'features/authentication/presentation/pages/splash_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize Hive for local storage
   await Hive.initFlutter();
-  
-  runApp(
-    const ProviderScope(
-      child: HomeVZApp(),
-    ),
-  );
+
+  runApp(const ProviderScope(child: HomeVZApp()));
 }
 
 class HomeVZApp extends StatelessWidget {

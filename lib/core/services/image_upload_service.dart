@@ -23,7 +23,7 @@ class ImageUploadService {
         maxWidth: maxWidth,
         maxHeight: maxHeight,
       );
-      
+
       if (image != null) {
         return File(image.path);
       }
@@ -47,10 +47,10 @@ class ImageUploadService {
         maxWidth: maxWidth,
         maxHeight: maxHeight,
       );
-      
+
       // Limit the number of selected images
       final limitedImages = images.take(maxImages).toList();
-      
+
       return limitedImages.map((image) => File(image.path)).toList();
     } catch (e) {
       debugPrint('Error picking multiple images: $e');
@@ -140,7 +140,7 @@ class ImageUploadService {
   }) async {
     try {
       List<MultipartFile> multipartFiles = [];
-      
+
       for (File file in imageFiles) {
         multipartFiles.add(
           await MultipartFile.fromFile(
@@ -159,11 +159,7 @@ class ImageUploadService {
         'https://api.homevz.co.ke$endpoint',
         data: formData,
         onSendProgress: onProgress,
-        options: Options(
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        ),
+        options: Options(headers: {'Content-Type': 'multipart/form-data'}),
       );
 
       if (response.statusCode == 200) {
@@ -177,27 +173,30 @@ class ImageUploadService {
   }
 
   /// Get image source choice (camera or gallery)
-  static Future<ImageSource?> showImageSourceDialog(BuildContext context) async {
+  static Future<ImageSource?> showImageSourceDialog(
+    BuildContext context,
+  ) async {
     return await showDialog<ImageSource>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Select Image Source'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text('Camera'),
-              onTap: () => Navigator.pop(context, ImageSource.camera),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Select Image Source'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.camera_alt),
+                  title: const Text('Camera'),
+                  onTap: () => Navigator.pop(context, ImageSource.camera),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.photo_library),
+                  title: const Text('Gallery'),
+                  onTap: () => Navigator.pop(context, ImageSource.gallery),
+                ),
+              ],
             ),
-            ListTile(
-              leading: const Icon(Icons.photo_library),
-              title: const Text('Gallery'),
-              onTap: () => Navigator.pop(context, ImageSource.gallery),
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
@@ -205,7 +204,7 @@ class ImageUploadService {
   static bool isValidImage(File file) {
     final validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
     final fileName = file.path.toLowerCase();
-    
+
     return validExtensions.any((ext) => fileName.endsWith(ext));
   }
 

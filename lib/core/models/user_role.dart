@@ -27,7 +27,7 @@ class AppUser {
   final String? profileImage;
   final DateTime createdAt;
   final DateTime? updatedAt;
-  
+
   // Role-specific properties
   final Map<String, dynamic>? tenantProfile;
   final Map<String, dynamic>? ownerProfile;
@@ -54,9 +54,10 @@ class AppUser {
       role: UserRole.fromString(json['role'] as String),
       profileImage: json['profileImage'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: json['updatedAt'] != null 
-          ? DateTime.parse(json['updatedAt'] as String) 
-          : null,
+      updatedAt:
+          json['updatedAt'] != null
+              ? DateTime.parse(json['updatedAt'] as String)
+              : null,
       tenantProfile: json['tenantProfile'] as Map<String, dynamic>?,
       ownerProfile: json['ownerProfile'] as Map<String, dynamic>?,
     );

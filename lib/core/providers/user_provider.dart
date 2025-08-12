@@ -3,7 +3,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_role.dart';
 
 /// Provider for current user state
-final userProvider = StateNotifierProvider<UserNotifier, AsyncValue<AppUser?>>((ref) {
+final userProvider = StateNotifierProvider<UserNotifier, AsyncValue<AppUser?>>((
+  ref,
+) {
   return UserNotifier();
 });
 
@@ -41,13 +43,13 @@ class UserNotifier extends StateNotifier<AsyncValue<AppUser?>> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final userJson = prefs.getString(_userKey);
-      
+
       if (userJson != null) {
         // In a real app, you'd parse the JSON
         // For now, create a mock user based on stored role
         final roleString = prefs.getString(_userRoleKey) ?? 'tenant';
         final role = UserRole.fromString(roleString);
-        
+
         final user = AppUser(
           id: '1',
           email: 'user@homevz.co.ke',
@@ -55,7 +57,7 @@ class UserNotifier extends StateNotifier<AsyncValue<AppUser?>> {
           role: role,
           createdAt: DateTime.now(),
         );
-        
+
         state = AsyncValue.data(user);
       } else {
         state = const AsyncValue.data(null);
@@ -69,17 +71,19 @@ class UserNotifier extends StateNotifier<AsyncValue<AppUser?>> {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_userRoleKey, role.value);
-      
+
       // Create or update user with new role
       final currentUser = state.value;
-      final user = currentUser?.copyWith(role: role) ?? AppUser(
-        id: '1',
-        email: 'user@homevz.co.ke',
-        fullName: 'John Doe',
-        role: role,
-        createdAt: DateTime.now(),
-      );
-      
+      final user =
+          currentUser?.copyWith(role: role) ??
+          AppUser(
+            id: '1',
+            email: 'user@homevz.co.ke',
+            fullName: 'John Doe',
+            role: role,
+            createdAt: DateTime.now(),
+          );
+
       await prefs.setString(_userKey, 'user_data'); // In real app, store JSON
       state = AsyncValue.data(user);
     } catch (e, stackTrace) {
@@ -92,7 +96,7 @@ class UserNotifier extends StateNotifier<AsyncValue<AppUser?>> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_userKey, 'user_data'); // In real app, store JSON
       await prefs.setString(_userRoleKey, user.role.value);
-      
+
       state = AsyncValue.data(user);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
@@ -104,7 +108,7 @@ class UserNotifier extends StateNotifier<AsyncValue<AppUser?>> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_userKey);
       await prefs.remove(_userRoleKey);
-      
+
       state = const AsyncValue.data(null);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
