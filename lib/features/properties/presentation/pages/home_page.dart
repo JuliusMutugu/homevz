@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/providers/user_provider.dart';
+import '../../../../core/models/user_role.dart';
 import '../../property_details_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -16,59 +18,102 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final userRole = ref.watch(userRoleProvider);
+    final isOwner = userRole == UserRole.owner;
+    
     return Scaffold(
       backgroundColor: AppColors.background,
       drawer: _buildNavigationDrawer(context),
       body: IndexedStack(
         index: _currentIndex,
-        children: const [
-          _HomeTab(),
-          _SearchTab(),
-          _FavoritesTab(),
-          _MessagesTab(),
-          _ProfileTab(),
-        ],
+        children: isOwner 
+            ? const [
+                _OwnerDashboardTab(),
+                _MyPropertiesTab(),
+                _ApplicationsTab(),
+                _MessagesTab(),
+                _ProfileTab(),
+              ]
+            : const [
+                _HomeTab(),
+                _SearchTab(),
+                _FavoritesTab(),
+                _MessagesTab(),
+                _ProfileTab(),
+              ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        selectedItemColor: AppColors.primaryGreen,
-        unselectedItemColor: AppColors.grey500,
-        backgroundColor: AppColors.surface,
-        elevation: 8,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search_outlined),
-            activeIcon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite_outline),
-            activeIcon: Icon(Icons.favorite),
-            label: 'Favorites',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble_outline),
-            activeIcon: Icon(Icons.chat_bubble),
-            label: 'Messages',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
+      bottomNavigationBar: _buildBottomNavigationBar(isOwner),
+    );
+  }
+
+  Widget _buildBottomNavigationBar(bool isOwner) {
+    return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      currentIndex: _currentIndex,
+      onTap: (index) {
+        setState(() {
+          _currentIndex = index;
+        });
+      },
+      selectedItemColor: AppColors.primaryGreen,
+      unselectedItemColor: AppColors.grey500,
+      backgroundColor: AppColors.surface,
+      elevation: 8,
+      items: isOwner 
+          ? const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.dashboard_outlined),
+                activeIcon: Icon(Icons.dashboard),
+                label: 'Dashboard',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home_work_outlined),
+                activeIcon: Icon(Icons.home_work),
+                label: 'Properties',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.assignment_outlined),
+                activeIcon: Icon(Icons.assignment),
+                label: 'Applications',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.chat_bubble_outline),
+                activeIcon: Icon(Icons.chat_bubble),
+                label: 'Messages',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person_outline),
+                activeIcon: Icon(Icons.person),
+                label: 'Profile',
+              ),
+            ]
+          : const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home_outlined),
+                activeIcon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.search_outlined),
+                activeIcon: Icon(Icons.search),
+                label: 'Search',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.favorite_outline),
+                activeIcon: Icon(Icons.favorite),
+                label: 'Favorites',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.chat_bubble_outline),
+                activeIcon: Icon(Icons.chat_bubble),
+                label: 'Messages',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person_outline),
+                activeIcon: Icon(Icons.person),
+                label: 'Profile',
+              ),
+            ],
     );
   }
 
@@ -1712,16 +1757,19 @@ class ChatMessage {
   });
 }
 
-class _ProfileTab extends StatefulWidget {
+class _ProfileTab extends ConsumerStatefulWidget {
   const _ProfileTab();
 
   @override
-  State<_ProfileTab> createState() => _ProfileTabState();
+  ConsumerState<_ProfileTab> createState() => _ProfileTabState();
 }
 
-class _ProfileTabState extends State<_ProfileTab> {
+class _ProfileTabState extends ConsumerState<_ProfileTab> {
   @override
   Widget build(BuildContext context) {
+    final userRole = ref.watch(userRoleProvider);
+    final isOwner = userRole == UserRole.owner;
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
@@ -1788,6 +1836,25 @@ class _ProfileTabState extends State<_ProfileTab> {
                       color: AppColors.primaryWhite.withOpacity(0.9),
                     ),
                   ),
+                  const SizedBox(height: 12),
+                  // User role indicator
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryWhite.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: AppColors.primaryWhite.withOpacity(0.3),
+                      ),
+                    ),
+                    child: Text(
+                      isOwner ? 'Property Owner' : 'Tenant',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.primaryWhite,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -1843,6 +1910,14 @@ class _ProfileTabState extends State<_ProfileTab> {
             const SizedBox(height: 16),
             
             _buildMenuSection([
+              _buildMenuItem(
+                'Switch to ${isOwner ? 'Tenant' : 'Owner'} Mode',
+                isOwner 
+                    ? 'Looking for a place to rent?' 
+                    : 'Have properties to rent out?',
+                isOwner ? Icons.search : Icons.home_work,
+                () => _showRoleSwitchDialog(),
+              ),
               _buildMenuItem(
                 'Account Settings',
                 'Update your account information',
@@ -1991,6 +2066,656 @@ class _ProfileTabState extends State<_ProfileTab> {
     Navigator.of(context).pushNamedAndRemoveUntil(
       '/auth',
       (route) => false,
+    );
+  }
+
+  void _showRoleSwitchDialog() {
+    final userRole = ref.read(userRoleProvider);
+    final isOwner = userRole == UserRole.owner;
+    final newRole = isOwner ? UserRole.tenant : UserRole.owner;
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Switch to ${newRole.title}?'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              isOwner 
+                  ? 'Switch to tenant mode to browse and rent properties.'
+                  : 'Switch to owner mode to list and manage your properties.',
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Your current data will be preserved and you can switch back anytime.',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              try {
+                await ref.read(userProvider.notifier).setUserRole(newRole);
+                if (mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Switched to ${newRole.title} mode successfully!',
+                      ),
+                      backgroundColor: AppColors.primaryGreen,
+                    ),
+                  );
+                  // Reset to first tab
+                  setState(() {
+                    widget.key; // Trigger rebuild
+                  });
+                }
+              } catch (e) {
+                if (mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error switching roles: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              }
+            },
+            child: const Text('Switch'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Owner-specific tabs
+class _OwnerDashboardTab extends StatelessWidget {
+  const _OwnerDashboardTab();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Welcome back!',
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Manage your properties and tenants',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.notifications_outlined),
+                ),
+              ],
+            ),
+            
+            const SizedBox(height: 24),
+            
+            // Stats Cards
+            Row(
+              children: [
+                Expanded(
+                  child: _buildStatCard(
+                    'Total Properties',
+                    '12',
+                    Icons.home_work,
+                    AppColors.primaryGreen,
+                    theme,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildStatCard(
+                    'Occupied',
+                    '10',
+                    Icons.people,
+                    Colors.blue,
+                    theme,
+                  ),
+                ),
+              ],
+            ),
+            
+            const SizedBox(height: 12),
+            
+            Row(
+              children: [
+                Expanded(
+                  child: _buildStatCard(
+                    'Monthly Revenue',
+                    'KES 850K',
+                    Icons.trending_up,
+                    Colors.green,
+                    theme,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildStatCard(
+                    'Pending Apps',
+                    '5',
+                    Icons.assignment,
+                    Colors.orange,
+                    theme,
+                  ),
+                ),
+              ],
+            ),
+            
+            const SizedBox(height: 24),
+            
+            // Quick Actions
+            Text(
+              'Quick Actions',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            Row(
+              children: [
+                Expanded(
+                  child: _buildActionCard(
+                    'Add Property',
+                    Icons.add_home,
+                    AppColors.primaryGreen,
+                    () {},
+                    theme,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildActionCard(
+                    'View Reports',
+                    Icons.analytics,
+                    Colors.blue,
+                    () {},
+                    theme,
+                  ),
+                ),
+              ],
+            ),
+            
+            const SizedBox(height: 24),
+            
+            // Recent Activities
+            Text(
+              'Recent Activities',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            _buildActivityCard(
+              'New application for Westlands Apartment',
+              'Sarah Wanjiku applied for 2BR apartment',
+              '2 hours ago',
+              Icons.assignment,
+              theme,
+            ),
+            _buildActivityCard(
+              'Rent payment received',
+              'John Doe paid KES 45,000 for November',
+              '1 day ago',
+              Icons.payment,
+              theme,
+            ),
+            _buildActivityCard(
+              'Maintenance request',
+              'Kitchen sink issue reported at Karen Villa',
+              '2 days ago',
+              Icons.build,
+              theme,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatCard(
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+    ThemeData theme,
+  ) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: color, size: 24),
+                const Spacer(),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              value,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              title,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionCard(
+    String title,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+    ThemeData theme,
+  ) {
+    return Card(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: color, size: 24),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                title,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActivityCard(
+    String title,
+    String subtitle,
+    String time,
+    IconData icon,
+    ThemeData theme,
+  ) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: AppColors.primaryGreen.withOpacity(0.1),
+          child: Icon(icon, color: AppColors.primaryGreen),
+        ),
+        title: Text(title),
+        subtitle: Text(subtitle),
+        trailing: Text(
+          time,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _MyPropertiesTab extends StatelessWidget {
+  const _MyPropertiesTab();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    return SafeArea(
+      child: Column(
+        children: [
+          // Header
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'My Properties',
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                FilledButton.icon(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Add Property feature coming soon')),
+                    );
+                  },
+                  icon: const Icon(Icons.add),
+                  label: const Text('Add Property'),
+                ),
+              ],
+            ),
+          ),
+          
+          // Properties List
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: 5,
+              itemBuilder: (context, index) {
+                return _buildPropertyCard(index, theme);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPropertyCard(int index, ThemeData theme) {
+    final properties = [
+      {'name': 'Westlands Apartment', 'location': 'Westlands, Nairobi', 'rent': '45,000', 'status': 'Occupied'},
+      {'name': 'Karen Villa', 'location': 'Karen, Nairobi', 'rent': '85,000', 'status': 'Occupied'},
+      {'name': 'Kilimani Studio', 'location': 'Kilimani, Nairobi', 'rent': '25,000', 'status': 'Vacant'},
+      {'name': 'Lavington House', 'location': 'Lavington, Nairobi', 'rent': '120,000', 'status': 'Occupied'},
+      {'name': 'South B Bedsitter', 'location': 'South B, Nairobi', 'rent': '18,000', 'status': 'Vacant'},
+    ];
+    
+    final property = properties[index];
+    final isOccupied = property['status'] == 'Occupied';
+    
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        property['name']!,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        property['location']!,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: isOccupied 
+                        ? Colors.green.withOpacity(0.1)
+                        : Colors.orange.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    property['status']!,
+                    style: TextStyle(
+                      color: isOccupied ? Colors.green : Colors.orange,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            
+            const SizedBox(height: 12),
+            
+            Row(
+              children: [
+                Text(
+                  'KES ${property['rent']}/month',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: AppColors.primaryGreen,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Spacer(),
+                TextButton(
+                  onPressed: () {},
+                  child: const Text('View Details'),
+                ),
+                TextButton(
+                  onPressed: () {},
+                  child: const Text('Edit'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ApplicationsTab extends StatelessWidget {
+  const _ApplicationsTab();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    return SafeArea(
+      child: Column(
+        children: [
+          // Header
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Rental Applications',
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Chip(
+                  label: const Text('5 Pending'),
+                  backgroundColor: Colors.orange.withOpacity(0.1),
+                  labelStyle: const TextStyle(color: Colors.orange),
+                ),
+              ],
+            ),
+          ),
+          
+          // Applications List
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: 5,
+              itemBuilder: (context, index) {
+                return _buildApplicationCard(index, theme);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildApplicationCard(int index, ThemeData theme) {
+    final applications = [
+      {'name': 'Sarah Wanjiku', 'property': 'Westlands Apartment', 'date': '2 hours ago', 'status': 'Pending'},
+      {'name': 'Michael Ochieng', 'property': 'Karen Villa', 'date': '1 day ago', 'status': 'Approved'},
+      {'name': 'Grace Muthoni', 'property': 'Kilimani Studio', 'date': '2 days ago', 'status': 'Pending'},
+      {'name': 'David Kimani', 'property': 'Lavington House', 'date': '3 days ago', 'status': 'Rejected'},
+      {'name': 'Jane Achieng', 'property': 'South B Bedsitter', 'date': '1 week ago', 'status': 'Pending'},
+    ];
+    
+    final application = applications[index];
+    final status = application['status']!;
+    Color statusColor;
+    
+    switch (status) {
+      case 'Approved':
+        statusColor = Colors.green;
+        break;
+      case 'Rejected':
+        statusColor = Colors.red;
+        break;
+      default:
+        statusColor = Colors.orange;
+    }
+    
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: AppColors.primaryGreen.withOpacity(0.1),
+                  child: Text(
+                    application['name']![0],
+                    style: const TextStyle(
+                      color: AppColors.primaryGreen,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        application['name']!,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Applied for ${application['property']}',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: statusColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    status,
+                    style: TextStyle(
+                      color: statusColor,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            
+            const SizedBox(height: 12),
+            
+            Row(
+              children: [
+                Text(
+                  application['date']!,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const Spacer(),
+                if (status == 'Pending') ...[
+                  TextButton(
+                    onPressed: () {},
+                    child: const Text('Reject'),
+                  ),
+                  FilledButton(
+                    onPressed: () {},
+                    child: const Text('Approve'),
+                  ),
+                ] else ...[
+                  TextButton(
+                    onPressed: () {},
+                    child: const Text('View Details'),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

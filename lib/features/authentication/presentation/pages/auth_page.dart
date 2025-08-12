@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/providers/user_type_provider.dart';
 import '../../../properties/presentation/pages/home_page.dart';
 
 class AuthPage extends ConsumerStatefulWidget {
@@ -61,6 +62,9 @@ class _AuthPageState extends ConsumerState<AuthPage>
       // Simulate API call
       await Future.delayed(const Duration(seconds: 2));
       
+      // Set user as logged in
+      ref.read(userTypeProvider.notifier).login();
+      
       // Navigate to home page
       if (mounted) {
         Navigator.of(context).pushReplacement(
@@ -89,6 +93,9 @@ class _AuthPageState extends ConsumerState<AuthPage>
     try {
       // Simulate API call
       await Future.delayed(const Duration(seconds: 2));
+      
+      // Set user as logged in
+      ref.read(userTypeProvider.notifier).login();
       
       // Navigate to home page
       if (mounted) {

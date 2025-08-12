@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
-import 'auth_page.dart';
+import '../../role_selection_page.dart';
 
 class OnboardingPage extends ConsumerStatefulWidget {
   const OnboardingPage({super.key});
@@ -66,7 +66,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   void _navigateToAuth() {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (context) => const AuthPage(),
+        builder: (context) => const RoleSelectionPage(),
       ),
     );
   }
