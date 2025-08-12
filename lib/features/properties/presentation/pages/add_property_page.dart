@@ -80,10 +80,7 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              AppColors.primaryGreen.withOpacity(0.1),
-              Colors.white,
-            ],
+            colors: [AppColors.primaryGreen.withOpacity(0.1), Colors.white],
             stops: const [0.0, 0.3],
           ),
         ),
@@ -120,13 +117,7 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
   }
 
   Widget _buildProgressIndicator(ThemeData theme) {
-    final steps = [
-      'Basic Info',
-      'Images', 
-      'Location',
-      'Details',
-      'Amenities'
-    ];
+    final steps = ['Basic Info', 'Images', 'Location', 'Details', 'Amenities'];
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -136,7 +127,7 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
           Row(
             children: List.generate(5, (index) {
               final isActive = index <= _currentPage;
-              
+
               return Expanded(
                 child: Container(
                   height: 4,
@@ -145,7 +136,8 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
                     right: index == 4 ? 0 : 4,
                   ),
                   decoration: BoxDecoration(
-                    color: isActive ? AppColors.primaryGreen : AppColors.grey300,
+                    color:
+                        isActive ? AppColors.primaryGreen : AppColors.grey300,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -163,7 +155,10 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
                   steps[index],
                   textAlign: TextAlign.center,
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: isActive ? AppColors.primaryGreen : AppColors.textSecondary,
+                    color:
+                        isActive
+                            ? AppColors.primaryGreen
+                            : AppColors.textSecondary,
                     fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
                   ),
                 ),
@@ -186,7 +181,9 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
             // Header Card
             Card(
               elevation: 2,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -237,7 +234,9 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
             // Property Title
             Card(
               elevation: 1,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: TextFormField(
@@ -269,7 +268,9 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
                 Expanded(
                   child: Card(
                     elevation: 1,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: DropdownButtonFormField<String>(
@@ -282,12 +283,16 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
                           contentPadding: EdgeInsets.symmetric(vertical: 8),
                         ),
                         style: const TextStyle(fontSize: 13),
-                        items: AppConstants.propertyTypes.map((type) {
-                          return DropdownMenuItem(
-                            value: type, 
-                            child: Text(type, style: const TextStyle(fontSize: 13))
-                          );
-                        }).toList(),
+                        items:
+                            AppConstants.propertyTypes.map((type) {
+                              return DropdownMenuItem(
+                                value: type,
+                                child: Text(
+                                  type,
+                                  style: const TextStyle(fontSize: 13),
+                                ),
+                              );
+                            }).toList(),
                         onChanged: (value) {
                           setState(() {
                             _selectedPropertyType = value!;
@@ -301,7 +306,9 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
                 Expanded(
                   child: Card(
                     elevation: 1,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: TextFormField(
@@ -337,7 +344,9 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
                 Expanded(
                   child: Card(
                     elevation: 1,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: TextFormField(
@@ -365,7 +374,9 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
                 Expanded(
                   child: Card(
                     elevation: 1,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: TextFormField(
@@ -399,7 +410,9 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
                 Expanded(
                   child: Card(
                     elevation: 1,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: TextFormField(
@@ -423,7 +436,9 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
                 Expanded(
                   child: Card(
                     elevation: 1,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: DropdownButtonFormField<String>(
@@ -436,12 +451,18 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.symmetric(vertical: 8),
                         ),
-                        items: ['Unfurnished', 'Semi-Furnished', 'Furnished']
-                            .map((type) => DropdownMenuItem(
-                              value: type, 
-                              child: Text(type, style: const TextStyle(fontSize: 13))
-                            ))
-                            .toList(),
+                        items:
+                            ['Unfurnished', 'Semi-Furnished', 'Furnished']
+                                .map(
+                                  (type) => DropdownMenuItem(
+                                    value: type,
+                                    child: Text(
+                                      type,
+                                      style: const TextStyle(fontSize: 13),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
                         onChanged: (value) {
                           setState(() {
                             _selectedFurnishing = value!;
@@ -458,7 +479,9 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
             // Description
             Card(
               elevation: 1,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: TextFormField(
@@ -735,22 +758,28 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
                       });
                       _getAddressFromCoordinates(location);
                     },
-                    markers: _selectedLocation != null
-                        ? {
-                            Marker(
-                              markerId: const MarkerId('property_location'),
-                              position: _selectedLocation!,
-                              infoWindow: const InfoWindow(
-                                title: 'Property Location',
+                    markers:
+                        _selectedLocation != null
+                            ? {
+                              Marker(
+                                markerId: const MarkerId('property_location'),
+                                position: _selectedLocation!,
+                                infoWindow: const InfoWindow(
+                                  title: 'Property Location',
+                                ),
                               ),
-                            ),
-                          }
-                        : {},
+                            }
+                            : {},
                     zoomGesturesEnabled: true,
                     scrollGesturesEnabled: true,
                     rotateGesturesEnabled: true,
                     tiltGesturesEnabled: true,
                     mapType: MapType.normal,
+                    myLocationEnabled:
+                        false, // Disable to avoid permission errors
+                    myLocationButtonEnabled: false, // Disable location button
+                    compassEnabled: true,
+                    mapToolbarEnabled: false,
                   ),
                   // Instructions overlay
                   if (_selectedLocation == null)
@@ -766,10 +795,7 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
                         ),
                         child: const Text(
                           'Tap on the map to select your property location',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                          ),
+                          style: TextStyle(color: Colors.white, fontSize: 12),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -936,13 +962,13 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
               labelText: 'Minimum Lease Term',
               prefixIcon: Icon(Icons.schedule),
             ),
-            items: [
-              '3 months',
-              '6 months', 
-              '1 year',
-              '2 years',
-              'Negotiable'
-            ].map((term) => DropdownMenuItem(value: term, child: Text(term))).toList(),
+            items:
+                ['3 months', '6 months', '1 year', '2 years', 'Negotiable']
+                    .map(
+                      (term) =>
+                          DropdownMenuItem(value: term, child: Text(term)),
+                    )
+                    .toList(),
             onChanged: (value) {
               // Handle lease term selection
             },
@@ -955,13 +981,19 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
               labelText: 'Pet Policy',
               prefixIcon: Icon(Icons.pets),
             ),
-            items: [
-              'No pets allowed',
-              'Cats only',
-              'Small dogs only',
-              'All pets welcome',
-              'Negotiable'
-            ].map((policy) => DropdownMenuItem(value: policy, child: Text(policy))).toList(),
+            items:
+                [
+                      'No pets allowed',
+                      'Cats only',
+                      'Small dogs only',
+                      'All pets welcome',
+                      'Negotiable',
+                    ]
+                    .map(
+                      (policy) =>
+                          DropdownMenuItem(value: policy, child: Text(policy)),
+                    )
+                    .toList(),
             onChanged: (value) {
               // Handle pet policy selection
             },
@@ -973,7 +1005,8 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
             maxLines: 3,
             decoration: const InputDecoration(
               labelText: 'Special Features',
-              hintText: 'e.g., Ocean view, rooftop access, smart home features...',
+              hintText:
+                  'e.g., Ocean view, rooftop access, smart home features...',
               prefixIcon: Icon(Icons.star),
             ),
           ),
@@ -1143,10 +1176,10 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
   void _getAddressFromCoordinates(LatLng location) async {
     try {
       List<Placemark> placemarks = await placemarkFromCoordinates(
-        location.latitude, 
-        location.longitude
+        location.latitude,
+        location.longitude,
       );
-      
+
       if (placemarks.isNotEmpty) {
         final place = placemarks.first;
         final address = [
@@ -1155,7 +1188,7 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
           place.locality,
           place.country,
         ].where((part) => part != null && part.isNotEmpty).join(', ');
-        
+
         setState(() {
           _locationAddress = address;
           _addressController.text = address;
@@ -1163,7 +1196,8 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
       }
     } catch (e) {
       setState(() {
-        _locationAddress = 'Lat: ${location.latitude.toStringAsFixed(4)}, Lng: ${location.longitude.toStringAsFixed(4)}';
+        _locationAddress =
+            'Lat: ${location.latitude.toStringAsFixed(4)}, Lng: ${location.longitude.toStringAsFixed(4)}';
       });
     }
   }

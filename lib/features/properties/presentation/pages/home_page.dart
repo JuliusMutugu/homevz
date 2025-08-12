@@ -2382,9 +2382,7 @@ class _OwnerDashboardTabState extends State<_OwnerDashboardTab> {
   void _showAddPropertyDialog(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const AddPropertyPage(),
-      ),
+      MaterialPageRoute(builder: (context) => const AddPropertyPage()),
     );
   }
 
@@ -2512,10 +2510,7 @@ class _MyPropertiesTab extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  AppColors.primaryGreen.withOpacity(0.1),
-                  Colors.white,
-                ],
+                colors: [AppColors.primaryGreen.withOpacity(0.1), Colors.white],
               ),
             ),
             child: Padding(
@@ -2620,7 +2615,8 @@ class _MyPropertiesTab extends StatelessWidget {
         'type': 'Apartment',
         'bedrooms': '2',
         'bathrooms': '2',
-        'image': 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400',
+        'image':
+            'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400',
       },
       {
         'name': 'Karen Villa',
@@ -2630,7 +2626,8 @@ class _MyPropertiesTab extends StatelessWidget {
         'type': 'Villa',
         'bedrooms': '4',
         'bathrooms': '3',
-        'image': 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400',
+        'image':
+            'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400',
       },
       {
         'name': 'Kilimani Studio',
@@ -2640,7 +2637,8 @@ class _MyPropertiesTab extends StatelessWidget {
         'type': 'Studio',
         'bedrooms': '1',
         'bathrooms': '1',
-        'image': 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400',
+        'image':
+            'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400',
       },
       {
         'name': 'Lavington House',
@@ -2650,7 +2648,8 @@ class _MyPropertiesTab extends StatelessWidget {
         'type': 'House',
         'bedrooms': '5',
         'bathrooms': '4',
-        'image': 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400',
+        'image':
+            'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400',
       },
       {
         'name': 'South B Bedsitter',
@@ -2660,7 +2659,8 @@ class _MyPropertiesTab extends StatelessWidget {
         'type': 'Bedsitter',
         'bedrooms': '1',
         'bathrooms': '1',
-        'image': 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400',
+        'image':
+            'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400',
       },
     ];
   }
@@ -2668,29 +2668,32 @@ class _MyPropertiesTab extends StatelessWidget {
   void _showDeleteConfirmation(BuildContext context, String propertyName) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Property'),
-        content: Text('Are you sure you want to delete "$propertyName"? This action cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Delete Property'),
+            content: Text(
+              'Are you sure you want to delete "$propertyName"? This action cannot be undone.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('$propertyName deleted successfully'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                },
+                style: FilledButton.styleFrom(backgroundColor: Colors.red),
+                child: const Text('Delete'),
+              ),
+            ],
           ),
-          FilledButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('$propertyName deleted successfully'),
-                  backgroundColor: Colors.red,
-                ),
-              );
-            },
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
     );
   }
 }

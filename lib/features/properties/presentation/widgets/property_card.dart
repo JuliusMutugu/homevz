@@ -55,32 +55,38 @@ class PropertyCard extends StatelessWidget {
                         topLeft: Radius.circular(12),
                         topRight: Radius.circular(12),
                       ),
-                      image: imageUrl.isNotEmpty
-                          ? DecorationImage(
-                              image: NetworkImage(imageUrl),
-                              fit: BoxFit.cover,
-                            )
-                          : null,
+                      image:
+                          imageUrl.isNotEmpty
+                              ? DecorationImage(
+                                image: NetworkImage(imageUrl),
+                                fit: BoxFit.cover,
+                              )
+                              : null,
                       color: imageUrl.isEmpty ? AppColors.grey200 : null,
                     ),
-                    child: imageUrl.isEmpty
-                        ? const Center(
-                            child: Icon(
-                              Icons.home,
-                              size: 30,
-                              color: AppColors.grey400,
-                            ),
-                          )
-                        : null,
+                    child:
+                        imageUrl.isEmpty
+                            ? const Center(
+                              child: Icon(
+                                Icons.home,
+                                size: 30,
+                                color: AppColors.grey400,
+                              ),
+                            )
+                            : null,
                   ),
                   // Status Badge
                   Positioned(
                     top: 6,
                     left: 6,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 1,
+                      ),
                       decoration: BoxDecoration(
-                        color: isOccupied ? AppColors.success : AppColors.warning,
+                        color:
+                            isOccupied ? AppColors.success : AppColors.warning,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -114,28 +120,42 @@ class PropertyCard extends StatelessWidget {
                               break;
                           }
                         },
-                        itemBuilder: (context) => [
-                          const PopupMenuItem(
-                            value: 'edit',
-                            child: Row(
-                              children: [
-                                Icon(Icons.edit, size: 12),
-                                SizedBox(width: 4),
-                                Text('Edit', style: TextStyle(fontSize: 11)),
-                              ],
-                            ),
-                          ),
-                          const PopupMenuItem(
-                            value: 'delete',
-                            child: Row(
-                              children: [
-                                Icon(Icons.delete, size: 12, color: Colors.red),
-                                SizedBox(width: 4),
-                                Text('Delete', style: TextStyle(color: Colors.red, fontSize: 11)),
-                              ],
-                            ),
-                          ),
-                        ],
+                        itemBuilder:
+                            (context) => [
+                              const PopupMenuItem(
+                                value: 'edit',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.edit, size: 12),
+                                    SizedBox(width: 4),
+                                    Text(
+                                      'Edit',
+                                      style: TextStyle(fontSize: 11),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const PopupMenuItem(
+                                value: 'delete',
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.delete,
+                                      size: 12,
+                                      color: Colors.red,
+                                    ),
+                                    SizedBox(width: 4),
+                                    Text(
+                                      'Delete',
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                       ),
                     ),
                   ),
@@ -170,7 +190,10 @@ class PropertyCard extends StatelessWidget {
                         Flexible(
                           flex: 1,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 3,
+                              vertical: 1,
+                            ),
                             decoration: BoxDecoration(
                               color: AppColors.primaryGreen.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(4),
