@@ -239,14 +239,18 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
               elevation: 1,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(12),
                 child: TextFormField(
                   controller: _titleController,
+                  style: const TextStyle(fontSize: 13),
                   decoration: const InputDecoration(
                     labelText: 'Property Title',
+                    labelStyle: TextStyle(fontSize: 12),
                     hintText: 'e.g., Modern 2BR Apartment in Kilimani',
-                    prefixIcon: Icon(Icons.home),
+                    hintStyle: TextStyle(fontSize: 12),
+                    prefixIcon: Icon(Icons.home, size: 20),
                     border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(vertical: 8),
                   ),
                   validator: (value) {
                     if (value?.isEmpty ?? true) {
@@ -267,16 +271,22 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
                     elevation: 1,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(12),
                       child: DropdownButtonFormField<String>(
                         value: _selectedPropertyType,
                         decoration: const InputDecoration(
                           labelText: 'Property Type',
-                          prefixIcon: Icon(Icons.category),
+                          labelStyle: TextStyle(fontSize: 12),
+                          prefixIcon: Icon(Icons.category, size: 20),
                           border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(vertical: 8),
                         ),
+                        style: const TextStyle(fontSize: 13),
                         items: AppConstants.propertyTypes.map((type) {
-                          return DropdownMenuItem(value: type, child: Text(type));
+                          return DropdownMenuItem(
+                            value: type, 
+                            child: Text(type, style: const TextStyle(fontSize: 13))
+                          );
                         }).toList(),
                         onChanged: (value) {
                           setState(() {
@@ -287,25 +297,29 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Card(
                     elevation: 1,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(12),
                       child: TextFormField(
                         controller: _priceController,
                         keyboardType: TextInputType.number,
+                        style: const TextStyle(fontSize: 13),
                         decoration: const InputDecoration(
-                          labelText: 'Monthly Rent (KES)',
+                          labelText: 'Rent (KES)',
+                          labelStyle: TextStyle(fontSize: 12),
                           hintText: '50,000',
-                          prefixIcon: Icon(Icons.attach_money),
+                          hintStyle: TextStyle(fontSize: 12),
+                          prefixIcon: Icon(Icons.attach_money, size: 20),
                           border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(vertical: 8),
                         ),
                         validator: (value) {
                           if (value?.isEmpty ?? true) {
-                            return 'Please enter monthly rent';
+                            return 'Required';
                           }
                           return null;
                         },
@@ -325,14 +339,17 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
                     elevation: 1,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(12),
                       child: TextFormField(
                         controller: _bedroomsController,
                         keyboardType: TextInputType.number,
+                        style: const TextStyle(fontSize: 13),
                         decoration: const InputDecoration(
                           labelText: 'Bedrooms',
-                          prefixIcon: Icon(Icons.bed),
+                          labelStyle: TextStyle(fontSize: 12),
+                          prefixIcon: Icon(Icons.bed, size: 20),
                           border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(vertical: 8),
                         ),
                         validator: (value) {
                           if (value?.isEmpty ?? true) {
@@ -344,20 +361,23 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Card(
                     elevation: 1,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(12),
                       child: TextFormField(
                         controller: _bathroomsController,
                         keyboardType: TextInputType.number,
+                        style: const TextStyle(fontSize: 13),
                         decoration: const InputDecoration(
                           labelText: 'Bathrooms',
-                          prefixIcon: Icon(Icons.bathroom),
+                          labelStyle: TextStyle(fontSize: 12),
+                          prefixIcon: Icon(Icons.bathroom, size: 20),
                           border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(vertical: 8),
                         ),
                         validator: (value) {
                           if (value?.isEmpty ?? true) {
@@ -381,36 +401,46 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
                     elevation: 1,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(12),
                       child: TextFormField(
                         controller: _areaController,
                         keyboardType: TextInputType.number,
+                        style: const TextStyle(fontSize: 13),
                         decoration: const InputDecoration(
-                          labelText: 'Area (sq. meters)',
+                          labelText: 'Area (sq.m)',
+                          labelStyle: TextStyle(fontSize: 12),
                           hintText: '120',
-                          prefixIcon: Icon(Icons.square_foot),
+                          hintStyle: TextStyle(fontSize: 12),
+                          prefixIcon: Icon(Icons.square_foot, size: 20),
                           border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(vertical: 8),
                         ),
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Card(
                     elevation: 1,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(12),
                       child: DropdownButtonFormField<String>(
                         value: _selectedFurnishing,
+                        style: const TextStyle(fontSize: 13),
                         decoration: const InputDecoration(
                           labelText: 'Furnishing',
-                          prefixIcon: Icon(Icons.chair),
+                          labelStyle: TextStyle(fontSize: 12),
+                          prefixIcon: Icon(Icons.chair, size: 20),
                           border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(vertical: 8),
                         ),
-                        items: ['Unfurnished', 'Semi-Furnished', 'Fully Furnished']
-                            .map((type) => DropdownMenuItem(value: type, child: Text(type)))
+                        items: ['Unfurnished', 'Semi-Furnished', 'Furnished']
+                            .map((type) => DropdownMenuItem(
+                              value: type, 
+                              child: Text(type, style: const TextStyle(fontSize: 13))
+                            ))
                             .toList(),
                         onChanged: (value) {
                           setState(() {
@@ -430,15 +460,19 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
               elevation: 1,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(12),
                 child: TextFormField(
                   controller: _descriptionController,
-                  maxLines: 4,
+                  maxLines: 3,
+                  style: const TextStyle(fontSize: 13),
                   decoration: const InputDecoration(
                     labelText: 'Description',
-                    hintText: 'Describe your property in detail to attract potential tenants...',
-                    prefixIcon: Icon(Icons.description),
+                    labelStyle: TextStyle(fontSize: 12),
+                    hintText: 'Describe your property in detail...',
+                    hintStyle: TextStyle(fontSize: 12),
+                    prefixIcon: Icon(Icons.description, size: 20),
                     border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(vertical: 8),
                   ),
                   validator: (value) {
                     if (value?.isEmpty ?? true) {
