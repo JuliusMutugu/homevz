@@ -30,11 +30,13 @@ class _PropertyOwnerDashboardPageState
             labelColor: Colors.white,
             unselectedLabelColor: Colors.white70,
             indicatorColor: Colors.white,
+            labelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+            unselectedLabelStyle: TextStyle(fontSize: 12),
             tabs: [
-              Tab(icon: Icon(Icons.dashboard), text: 'Overview'),
-              Tab(icon: Icon(Icons.home_work), text: 'Properties'),
-              Tab(icon: Icon(Icons.people), text: 'Tenants'),
-              Tab(icon: Icon(Icons.analytics), text: 'Analytics'),
+              Tab(icon: Icon(Icons.dashboard, size: 20), text: 'Overview'),
+              Tab(icon: Icon(Icons.home_work, size: 20), text: 'Properties'),
+              Tab(icon: Icon(Icons.people, size: 20), text: 'Tenants'),
+              Tab(icon: Icon(Icons.analytics, size: 20), text: 'Analytics'),
             ],
           ),
         ),
@@ -55,8 +57,9 @@ class _PropertyOwnerDashboardPageState
           },
           backgroundColor: AppColors.primaryGreen,
           foregroundColor: Colors.white,
-          icon: const Icon(Icons.add),
-          label: const Text('Add Property'),
+          icon: const Icon(Icons.add, size: 20),
+          label: const Text('Add Property', style: TextStyle(fontSize: 14)),
+          extendedTextStyle: const TextStyle(fontSize: 14),
         ),
       ),
     );
@@ -270,7 +273,7 @@ class _OverviewTab extends StatelessWidget {
           crossAxisCount: 2,
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
-          childAspectRatio: 1.5,
+          childAspectRatio: 1.8,
           children: [
             _buildActionCard(
               'Add Property',
@@ -324,7 +327,7 @@ class _OverviewTab extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),
@@ -333,15 +336,19 @@ class _OverviewTab extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: color, size: 32),
+            Icon(icon, color: color, size: 28),
             const SizedBox(height: 8),
-            Text(
-              title,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: color,
+            Flexible(
+              child: Text(
+                title,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: color,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -637,8 +644,11 @@ class _PropertiesTab extends StatelessWidget {
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 8,
@@ -680,31 +690,32 @@ class _PropertiesTab extends StatelessWidget {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () {},
-                    icon: const Icon(Icons.edit),
-                    label: const Text('Edit'),
+                    icon: const Icon(Icons.edit, size: 16),
+                    label: const Text('Edit', style: TextStyle(fontSize: 12)),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () {},
-                    icon: const Icon(Icons.visibility),
-                    label: const Text('View'),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.people),
-                    label: const Text('Tenants'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryGreen,
-                      foregroundColor: Colors.white,
-                    ),
+                    icon: const Icon(Icons.visibility, size: 16),
+                    label: const Text('View', style: TextStyle(fontSize: 12)),
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.people, size: 16),
+                label: const Text('Manage Tenants'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryGreen,
+                  foregroundColor: Colors.white,
+                ),
+              ),
             ),
           ],
         ),
@@ -782,7 +793,11 @@ class _TenantsTab extends StatelessWidget {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Unit ${index + 1}A - KES ${45000 + (index * 5000)}/month'),
+            Text(
+              'Unit ${index + 1}A - KES ${45000 + (index * 5000)}/month',
+              style: theme.textTheme.bodySmall,
+              overflow: TextOverflow.ellipsis,
+            ),
             const SizedBox(height: 4),
             Row(
               children: [

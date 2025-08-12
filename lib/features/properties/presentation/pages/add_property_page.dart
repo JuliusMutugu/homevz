@@ -685,32 +685,62 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: GoogleMap(
-                initialCameraPosition: const CameraPosition(
-                  target: LatLng(-1.2921, 36.8219), // Nairobi center
-                  zoom: 12,
-                ),
-                onMapCreated: (GoogleMapController controller) {
-                  _mapController = controller;
-                },
-                onTap: (LatLng location) {
-                  setState(() {
-                    _selectedLocation = location;
-                  });
-                  _getAddressFromCoordinates(location);
-                },
-                markers:
-                    _selectedLocation != null
+              child: Stack(
+                children: [
+                  GoogleMap(
+                    initialCameraPosition: const CameraPosition(
+                      target: LatLng(-1.2921, 36.8219), // Nairobi center
+                      zoom: 12,
+                    ),
+                    onMapCreated: (GoogleMapController controller) {
+                      _mapController = controller;
+                    },
+                    onTap: (LatLng location) {
+                      setState(() {
+                        _selectedLocation = location;
+                      });
+                      _getAddressFromCoordinates(location);
+                    },
+                    markers: _selectedLocation != null
                         ? {
-                          Marker(
-                            markerId: const MarkerId('property_location'),
-                            position: _selectedLocation!,
-                            infoWindow: const InfoWindow(
-                              title: 'Property Location',
+                            Marker(
+                              markerId: const MarkerId('property_location'),
+                              position: _selectedLocation!,
+                              infoWindow: const InfoWindow(
+                                title: 'Property Location',
+                              ),
                             ),
-                          ),
-                        }
+                          }
                         : {},
+                    zoomGesturesEnabled: true,
+                    scrollGesturesEnabled: true,
+                    rotateGesturesEnabled: true,
+                    tiltGesturesEnabled: true,
+                    mapType: MapType.normal,
+                  ),
+                  // Instructions overlay
+                  if (_selectedLocation == null)
+                    Positioned(
+                      bottom: 16,
+                      left: 16,
+                      right: 16,
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.7),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Text(
+                          'Tap on the map to select your property location',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
           ),
