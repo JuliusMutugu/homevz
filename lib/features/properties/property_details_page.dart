@@ -625,6 +625,14 @@ class _PropertyDetailsPageState extends State<PropertyDetailsPage>
                 onMapCreated: (GoogleMapController controller) {
                   mapController = controller;
                 },
+                myLocationEnabled: false, // Disable to avoid permission errors
+                myLocationButtonEnabled: false, // Disable location button
+                compassEnabled: true,
+                mapToolbarEnabled: false,
+                zoomGesturesEnabled: true,
+                scrollGesturesEnabled: true,
+                rotateGesturesEnabled: true,
+                tiltGesturesEnabled: true,
               ),
             ),
           ),

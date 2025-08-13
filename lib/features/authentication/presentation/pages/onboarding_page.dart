@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
-import 'auth_page.dart';
+import '../../role_selection_page.dart';
 
 class OnboardingPage extends ConsumerStatefulWidget {
   const OnboardingPage({super.key});
@@ -65,9 +65,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
 
   void _navigateToAuth() {
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => const AuthPage(),
-      ),
+      MaterialPageRoute(builder: (context) => const RoleSelectionPage()),
     );
   }
 
@@ -98,7 +96,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                 ],
               ),
             ),
-            
+
             // Onboarding content
             Expanded(
               child: PageView.builder(
@@ -124,29 +122,29 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                             color: data.color.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(60),
                           ),
-                          child: Icon(
-                            data.icon,
-                            size: 60,
-                            color: data.color,
-                          ),
+                          child: Icon(data.icon, size: 60, color: data.color),
                         ),
                         const SizedBox(height: 40),
-                        
+
                         // Title
                         Text(
                           data.title,
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          style: Theme.of(
+                            context,
+                          ).textTheme.headlineSmall?.copyWith(
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.bold,
                           ),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 16),
-                        
+
                         // Description
                         Text(
                           data.description,
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyLarge?.copyWith(
                             color: AppColors.textSecondary,
                             height: 1.5,
                           ),
@@ -158,7 +156,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                 },
               ),
             ),
-            
+
             // Bottom section with indicators and button
             Padding(
               padding: const EdgeInsets.all(24.0),
@@ -174,16 +172,17 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                         width: _currentPage == index ? 24 : 8,
                         height: 8,
                         decoration: BoxDecoration(
-                          color: _currentPage == index
-                              ? AppColors.primaryGreen
-                              : AppColors.grey300,
+                          color:
+                              _currentPage == index
+                                  ? AppColors.primaryGreen
+                                  : AppColors.grey300,
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 32),
-                  
+
                   // Next/Get Started button
                   SizedBox(
                     width: double.infinity,

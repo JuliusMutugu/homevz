@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/providers/user_type_provider.dart';
 import '../../../properties/presentation/pages/home_page.dart';
 
 class AuthPage extends ConsumerStatefulWidget {
@@ -60,13 +61,14 @@ class _AuthPageState extends ConsumerState<AuthPage>
     try {
       // Simulate API call
       await Future.delayed(const Duration(seconds: 2));
-      
+
+      // Set user as logged in
+      ref.read(userTypeProvider.notifier).login();
+
       // Navigate to home page
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const HomePage(),
-          ),
+          MaterialPageRoute(builder: (context) => const HomePage()),
         );
       }
     } catch (e) {
@@ -89,13 +91,14 @@ class _AuthPageState extends ConsumerState<AuthPage>
     try {
       // Simulate API call
       await Future.delayed(const Duration(seconds: 2));
-      
+
+      // Set user as logged in
+      ref.read(userTypeProvider.notifier).login();
+
       // Navigate to home page
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const HomePage(),
-          ),
+          MaterialPageRoute(builder: (context) => const HomePage()),
         );
       }
     } catch (e) {
@@ -111,16 +114,17 @@ class _AuthPageState extends ConsumerState<AuthPage>
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Error'),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Error'),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -151,7 +155,7 @@ class _AuthPageState extends ConsumerState<AuthPage>
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   Text(
                     'Welcome to ${AppConstants.appName}',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -160,7 +164,7 @@ class _AuthPageState extends ConsumerState<AuthPage>
                     ),
                   ),
                   const SizedBox(height: 8),
-                  
+
                   Text(
                     'Find your perfect home or manage your properties',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -171,7 +175,7 @@ class _AuthPageState extends ConsumerState<AuthPage>
                 ],
               ),
             ),
-            
+
             // Tab bar
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 24),
@@ -188,21 +192,15 @@ class _AuthPageState extends ConsumerState<AuthPage>
                 labelColor: AppColors.textOnPrimary,
                 unselectedLabelColor: AppColors.textSecondary,
                 dividerHeight: 0,
-                tabs: const [
-                  Tab(text: 'Login'),
-                  Tab(text: 'Sign Up'),
-                ],
+                tabs: const [Tab(text: 'Login'), Tab(text: 'Sign Up')],
               ),
             ),
-            
+
             // Tab content
             Expanded(
               child: TabBarView(
                 controller: _tabController,
-                children: [
-                  _buildLoginForm(),
-                  _buildSignupForm(),
-                ],
+                children: [_buildLoginForm(), _buildSignupForm()],
               ),
             ),
           ],
@@ -220,7 +218,7 @@ class _AuthPageState extends ConsumerState<AuthPage>
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 32),
-            
+
             // Email field
             TextFormField(
               controller: _loginEmailController,
@@ -240,7 +238,7 @@ class _AuthPageState extends ConsumerState<AuthPage>
               },
             ),
             const SizedBox(height: 16),
-            
+
             // Password field
             TextFormField(
               controller: _loginPasswordController,
@@ -257,7 +255,7 @@ class _AuthPageState extends ConsumerState<AuthPage>
               },
             ),
             const SizedBox(height: 8),
-            
+
             // Forgot password
             Align(
               alignment: Alignment.centerRight,
@@ -269,25 +267,26 @@ class _AuthPageState extends ConsumerState<AuthPage>
               ),
             ),
             const SizedBox(height: 24),
-            
+
             // Login button
             ElevatedButton(
               onPressed: _isLoading ? null : _handleLogin,
-              child: _isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          AppColors.primaryWhite,
+              child:
+                  _isLoading
+                      ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            AppColors.primaryWhite,
+                          ),
                         ),
-                      ),
-                    )
-                  : const Text('Login'),
+                      )
+                      : const Text('Login'),
             ),
             const SizedBox(height: 24),
-            
+
             // Social login
             Row(
               children: [
@@ -303,7 +302,7 @@ class _AuthPageState extends ConsumerState<AuthPage>
               ],
             ),
             const SizedBox(height: 16),
-            
+
             OutlinedButton.icon(
               onPressed: () {
                 // Handle Google sign in
@@ -327,7 +326,7 @@ class _AuthPageState extends ConsumerState<AuthPage>
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 32),
-              
+
               // Full name field
               TextFormField(
                 controller: _signupFullNameController,
@@ -343,7 +342,7 @@ class _AuthPageState extends ConsumerState<AuthPage>
                 },
               ),
               const SizedBox(height: 16),
-              
+
               // Email field
               TextFormField(
                 controller: _signupEmailController,
@@ -363,7 +362,7 @@ class _AuthPageState extends ConsumerState<AuthPage>
                 },
               ),
               const SizedBox(height: 16),
-              
+
               // Phone field
               TextFormField(
                 controller: _signupPhoneController,
@@ -381,7 +380,7 @@ class _AuthPageState extends ConsumerState<AuthPage>
                 },
               ),
               const SizedBox(height: 16),
-              
+
               // Password field
               TextFormField(
                 controller: _signupPasswordController,
@@ -401,7 +400,7 @@ class _AuthPageState extends ConsumerState<AuthPage>
                 },
               ),
               const SizedBox(height: 16),
-              
+
               // Confirm password field
               TextFormField(
                 controller: _signupConfirmPasswordController,
@@ -421,7 +420,7 @@ class _AuthPageState extends ConsumerState<AuthPage>
                 },
               ),
               const SizedBox(height: 24),
-              
+
               // Terms and conditions
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -460,22 +459,23 @@ class _AuthPageState extends ConsumerState<AuthPage>
                 ],
               ),
               const SizedBox(height: 24),
-              
+
               // Signup button
               ElevatedButton(
                 onPressed: _isLoading ? null : _handleSignup,
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            AppColors.primaryWhite,
+                child:
+                    _isLoading
+                        ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              AppColors.primaryWhite,
+                            ),
                           ),
-                        ),
-                      )
-                    : const Text('Create Account'),
+                        )
+                        : const Text('Create Account'),
               ),
             ],
           ),

@@ -2,7 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/providers/user_provider.dart';
+import '../../../../core/models/user_role.dart';
+import '../../../../core/services/notification_service.dart';
+import '../../../../core/widgets/image_picker_widget.dart';
+import '../../../notifications/pages/notifications_page.dart';
+import '../../../community/pages/community_page.dart';
+import 'add_property_page.dart';
+import 'property_owner_dashboard.dart';
+import '../../../profile/pages/profile_page.dart';
 import '../../property_details_page.dart';
+import '../widgets/property_card.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -16,65 +26,122 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final userRole = ref.watch(userRoleProvider);
+    final isOwner = userRole == UserRole.owner;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       drawer: _buildNavigationDrawer(context),
       body: IndexedStack(
         index: _currentIndex,
-        children: const [
-          _HomeTab(),
-          _SearchTab(),
-          _FavoritesTab(),
-          _MessagesTab(),
-          _ProfileTab(),
-        ],
+        children:
+            isOwner
+                ? [
+                  const _OwnerDashboardTab(),
+                  const _MyPropertiesTab(),
+                  const _ApplicationsTab(),
+                  const NotificationsPage(),
+                  const CommunityPage(),
+                  const ProfilePage(),
+                ]
+                : [
+                  const _HomeTab(),
+                  const _SearchTab(),
+                  const _FavoritesTab(),
+                  const NotificationsPage(),
+                  const CommunityPage(),
+                  const ProfilePage(),
+                ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        selectedItemColor: AppColors.primaryGreen,
-        unselectedItemColor: AppColors.grey500,
-        backgroundColor: AppColors.surface,
-        elevation: 8,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search_outlined),
-            activeIcon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite_outline),
-            activeIcon: Icon(Icons.favorite),
-            label: 'Favorites',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble_outline),
-            activeIcon: Icon(Icons.chat_bubble),
-            label: 'Messages',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
+      bottomNavigationBar: _buildBottomNavigationBar(isOwner),
+    );
+  }
+
+  Widget _buildBottomNavigationBar(bool isOwner) {
+    return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      currentIndex: _currentIndex,
+      onTap: (index) {
+        setState(() {
+          _currentIndex = index;
+        });
+      },
+      selectedItemColor: AppColors.primaryGreen,
+      unselectedItemColor: AppColors.grey500,
+      backgroundColor: AppColors.surface,
+      elevation: 8,
+      items:
+          isOwner
+              ? const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.dashboard_outlined),
+                  activeIcon: Icon(Icons.dashboard),
+                  label: 'Dashboard',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home_work_outlined),
+                  activeIcon: Icon(Icons.home_work),
+                  label: 'Properties',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.assignment_outlined),
+                  activeIcon: Icon(Icons.assignment),
+                  label: 'Applications',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.notifications_outlined),
+                  activeIcon: Icon(Icons.notifications),
+                  label: 'Notifications',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.people_outline),
+                  activeIcon: Icon(Icons.people),
+                  label: 'Community',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.person_outline),
+                  activeIcon: Icon(Icons.person),
+                  label: 'Profile',
+                ),
+              ]
+              : const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home_outlined),
+                  activeIcon: Icon(Icons.home),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.search_outlined),
+                  activeIcon: Icon(Icons.search),
+                  label: 'Search',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.favorite_outline),
+                  activeIcon: Icon(Icons.favorite),
+                  label: 'Favorites',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.notifications_outlined),
+                  activeIcon: Icon(Icons.notifications),
+                  label: 'Notifications',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.people_outline),
+                  activeIcon: Icon(Icons.people),
+                  label: 'Community',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.person_outline),
+                  activeIcon: Icon(Icons.person),
+                  label: 'Profile',
+                ),
+              ],
     );
   }
 
   Widget _buildNavigationDrawer(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Drawer(
       child: Column(
         children: [
@@ -124,7 +191,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               ],
             ),
           ),
-          
+
           // Menu Items
           Expanded(
             child: ListView(
@@ -136,119 +203,76 @@ class _HomePageState extends ConsumerState<HomePage> {
                   'Home',
                   () => Navigator.pop(context),
                 ),
-                _buildDrawerItem(
-                  context,
-                  Icons.person,
-                  'My Profile',
-                  () {
-                    Navigator.pop(context);
-                    setState(() {
-                      _currentIndex = 4; // Profile tab
-                    });
-                  },
-                ),
-                _buildDrawerItem(
-                  context,
-                  Icons.favorite,
-                  'My Favorites',
-                  () {
-                    Navigator.pop(context);
-                    setState(() {
-                      _currentIndex = 2; // Favorites tab
-                    });
-                  },
-                ),
-                _buildDrawerItem(
-                  context,
-                  Icons.message,
-                  'Messages',
-                  () {
-                    Navigator.pop(context);
-                    setState(() {
-                      _currentIndex = 3; // Messages tab
-                    });
-                  },
-                ),
-                _buildDrawerItem(
-                  context,
-                  Icons.history,
-                  'Booking History',
-                  () {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Booking History opened')),
-                    );
-                  },
-                ),
-                _buildDrawerItem(
-                  context,
-                  Icons.payment,
-                  'Payment History',
-                  () {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Payment History opened')),
-                    );
-                  },
-                ),
+                _buildDrawerItem(context, Icons.person, 'My Profile', () {
+                  Navigator.pop(context);
+                  setState(() {
+                    _currentIndex = 4; // Profile tab
+                  });
+                }),
+                _buildDrawerItem(context, Icons.favorite, 'My Favorites', () {
+                  Navigator.pop(context);
+                  setState(() {
+                    _currentIndex = 2; // Favorites tab
+                  });
+                }),
+                _buildDrawerItem(context, Icons.message, 'Messages', () {
+                  Navigator.pop(context);
+                  setState(() {
+                    _currentIndex = 3; // Messages tab
+                  });
+                }),
+                _buildDrawerItem(context, Icons.history, 'Booking History', () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Booking History opened')),
+                  );
+                }),
+                _buildDrawerItem(context, Icons.payment, 'Payment History', () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Payment History opened')),
+                  );
+                }),
                 _buildDrawerItem(
                   context,
                   Icons.business,
                   'List Your Property',
                   () {
                     Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Property listing form opened')),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AddPropertyPage(),
+                      ),
                     );
                   },
                 ),
                 const Divider(),
-                _buildDrawerItem(
-                  context,
-                  Icons.settings,
-                  'Settings',
-                  () {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Settings opened')),
-                    );
-                  },
-                ),
-                _buildDrawerItem(
-                  context,
-                  Icons.help,
-                  'Help & Support',
-                  () {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Help & Support opened')),
-                    );
-                  },
-                ),
-                _buildDrawerItem(
-                  context,
-                  Icons.info,
-                  'About HomeVZ',
-                  () {
-                    Navigator.pop(context);
-                    _showAboutDialog(context);
-                  },
-                ),
+                _buildDrawerItem(context, Icons.settings, 'Settings', () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Settings opened')),
+                  );
+                }),
+                _buildDrawerItem(context, Icons.help, 'Help & Support', () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Help & Support opened')),
+                  );
+                }),
+                _buildDrawerItem(context, Icons.info, 'About HomeVZ', () {
+                  Navigator.pop(context);
+                  _showAboutDialog(context);
+                }),
                 const Divider(),
-                _buildDrawerItem(
-                  context,
-                  Icons.logout,
-                  'Logout',
-                  () {
-                    Navigator.pop(context);
-                    _showLogoutDialog(context);
-                  },
-                  isDestructive: true,
-                ),
+                _buildDrawerItem(context, Icons.logout, 'Logout', () {
+                  Navigator.pop(context);
+                  _showLogoutDialog(context);
+                }, isDestructive: true),
               ],
             ),
           ),
-          
+
           // App Version
           Padding(
             padding: const EdgeInsets.all(16),
@@ -272,20 +296,22 @@ class _HomePageState extends ConsumerState<HomePage> {
     bool isDestructive = false,
   }) {
     final theme = Theme.of(context);
-    
+
     return ListTile(
       leading: Icon(
         icon,
-        color: isDestructive 
-            ? theme.colorScheme.error 
-            : theme.colorScheme.onSurface,
+        color:
+            isDestructive
+                ? theme.colorScheme.error
+                : theme.colorScheme.onSurface,
       ),
       title: Text(
         title,
         style: TextStyle(
-          color: isDestructive 
-              ? theme.colorScheme.error 
-              : theme.colorScheme.onSurface,
+          color:
+              isDestructive
+                  ? theme.colorScheme.error
+                  : theme.colorScheme.onSurface,
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -297,79 +323,77 @@ class _HomePageState extends ConsumerState<HomePage> {
   void _showAboutDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            Icon(
-              Icons.home,
-              color: AppColors.primaryGreen,
-              size: 28,
+      builder:
+          (context) => AlertDialog(
+            title: Row(
+              children: [
+                Icon(Icons.home, color: AppColors.primaryGreen, size: 28),
+                const SizedBox(width: 12),
+                const Text('About HomeVZ'),
+              ],
             ),
-            const SizedBox(width: 12),
-            const Text('About HomeVZ'),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              AppConstants.appDescription,
-              style: const TextStyle(fontSize: 16),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppConstants.appDescription,
+                  style: const TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Version: ${AppConstants.appVersion}',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  '© 2025 HomeVZ Kenya Ltd.',
+                  style: TextStyle(fontSize: 12),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            Text(
-              'Version: ${AppConstants.appVersion}',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Close'),
               ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              '© 2025 HomeVZ Kenya Ltd.',
-              style: TextStyle(fontSize: 12),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            ],
           ),
-        ],
-      ),
     );
   }
 
   void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // Navigate to login screen
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Logged out successfully'),
-                  backgroundColor: Colors.green,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Logout'),
+            content: const Text('Are you sure you want to logout?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  // Navigate to login screen
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Logged out successfully'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                },
+                style: FilledButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.error,
                 ),
-              );
-            },
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-            child: const Text('Logout'),
+                child: const Text('Logout'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }
@@ -391,20 +415,14 @@ class _HomeTab extends StatelessWidget {
           flexibleSpace: FlexibleSpaceBar(
             title: Text(
               'Welcome to ${AppConstants.appName}',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
             ),
             background: Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.primaryGreen,
-                    AppColors.mpesaGreen,
-                  ],
+                  colors: [AppColors.primaryGreen, AppColors.mpesaGreen],
                 ),
               ),
             ),
@@ -416,7 +434,7 @@ class _HomeTab extends StatelessWidget {
             ),
           ],
         ),
-        
+
         // Content
         SliverPadding(
           padding: const EdgeInsets.all(16),
@@ -425,19 +443,19 @@ class _HomeTab extends StatelessWidget {
               // Quick actions
               _buildQuickActions(context),
               const SizedBox(height: 24),
-              
+
               // Featured properties section
               _buildSectionHeader(context, 'Featured Properties', 'View All'),
               const SizedBox(height: 16),
               _buildFeaturedProperties(),
               const SizedBox(height: 24),
-              
+
               // Categories section
               _buildSectionHeader(context, 'Browse by Category', ''),
               const SizedBox(height: 16),
               _buildCategories(),
               const SizedBox(height: 24),
-              
+
               // Recent properties section
               _buildSectionHeader(context, 'Recent Listings', 'View All'),
               const SizedBox(height: 16),
@@ -458,9 +476,9 @@ class _HomeTab extends StatelessWidget {
           children: [
             Text(
               'Quick Actions',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 16),
             Row(
@@ -481,7 +499,14 @@ class _HomeTab extends StatelessWidget {
                     'List Property',
                     Icons.add_home,
                     AppColors.mpesaGreen,
-                    () {},
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AddPropertyPage(),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],
@@ -556,21 +581,22 @@ class _HomeTab extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionHeader(BuildContext context, String title, String action) {
+  Widget _buildSectionHeader(
+    BuildContext context,
+    String title,
+    String action,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
         if (action.isNotEmpty)
-          TextButton(
-            onPressed: () {},
-            child: Text(action),
-          ),
+          TextButton(onPressed: () {}, child: Text(action)),
       ],
     );
   }
@@ -602,7 +628,7 @@ class _HomeTab extends StatelessWidget {
                       ),
                     ),
                   ),
-                  
+
                   Padding(
                     padding: const EdgeInsets.all(12),
                     child: Column(
@@ -617,14 +643,15 @@ class _HomeTab extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           'Nairobi, Kenya',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: AppColors.textSecondary),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           'KES 45,000/month',
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          style: Theme.of(
+                            context,
+                          ).textTheme.titleSmall?.copyWith(
                             color: AppColors.primaryGreen,
                             fontWeight: FontWeight.bold,
                           ),
@@ -686,9 +713,8 @@ class _HomeTab extends StatelessWidget {
                         ),
                         Text(
                           '${category['count']} available',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: AppColors.textSecondary),
                         ),
                       ],
                     ),
@@ -718,10 +744,7 @@ class _HomeTab extends StatelessWidget {
                 color: AppColors.grey200,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(
-                Icons.image,
-                color: AppColors.grey400,
-              ),
+              child: const Icon(Icons.image, color: AppColors.grey400),
             ),
             title: Text('3BR House in Westlands'),
             subtitle: Text('KES 80,000/month • Nairobi'),
@@ -787,33 +810,45 @@ class _SearchTabState extends State<_SearchTab> {
                   },
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Filters row
                 Row(
                   children: [
                     Expanded(
-                      child: _buildFilterChip('Type', _selectedPropertyType, () {
-                        _showPropertyTypeDialog();
-                      }),
+                      child: _buildFilterChip(
+                        'Type',
+                        _selectedPropertyType,
+                        () {
+                          _showPropertyTypeDialog();
+                        },
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: _buildFilterChip('Location', _selectedLocation, () {
-                        _showLocationDialog();
-                      }),
+                      child: _buildFilterChip(
+                        'Location',
+                        _selectedLocation,
+                        () {
+                          _showLocationDialog();
+                        },
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: _buildFilterChip('Price', 'KES ${_minPrice.toInt()}k - ${_maxPrice.toInt()}k', () {
-                        _showPriceDialog();
-                      }),
+                      child: _buildFilterChip(
+                        'Price',
+                        'KES ${_minPrice.toInt()}k - ${_maxPrice.toInt()}k',
+                        () {
+                          _showPriceDialog();
+                        },
+                      ),
                     ),
                   ],
                 ),
               ],
             ),
           ),
-          
+
           // Results
           Expanded(
             child: ListView.builder(
@@ -844,15 +879,15 @@ class _SearchTabState extends State<_SearchTab> {
           children: [
             Text(
               label,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
             ),
             Text(
               value,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -864,7 +899,8 @@ class _SearchTabState extends State<_SearchTab> {
 
   Widget _buildPropertyCard(int index) {
     final propertyData = {
-      'title': '${index % 2 == 0 ? '2BR' : '3BR'} Apartment in ${AppConstants.popularAreas['Nairobi']![index % 4]}',
+      'title':
+          '${index % 2 == 0 ? '2BR' : '3BR'} Apartment in ${AppConstants.popularAreas['Nairobi']![index % 4]}',
       'location': 'Nairobi, Kenya',
       'price': '${30000 + (index * 5000)}',
       'bedrooms': index % 2 == 0 ? 2 : 3,
@@ -923,7 +959,7 @@ class _SearchTabState extends State<_SearchTab> {
                 ],
               ),
             ),
-            
+
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -951,7 +987,7 @@ class _SearchTabState extends State<_SearchTab> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  
+
                   // Amenities
                   Wrap(
                     spacing: 8,
@@ -972,10 +1008,7 @@ class _SearchTabState extends State<_SearchTab> {
 
   Widget _buildAmenityChip(String amenity) {
     return Chip(
-      label: Text(
-        amenity,
-        style: const TextStyle(fontSize: 12),
-      ),
+      label: Text(amenity, style: const TextStyle(fontSize: 12)),
       backgroundColor: AppColors.primaryGreen.withOpacity(0.1),
       side: BorderSide.none,
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -985,89 +1018,101 @@ class _SearchTabState extends State<_SearchTab> {
   void _showPropertyTypeDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Property Type'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            'All',
-            ...AppConstants.propertyTypes,
-          ].map((type) => RadioListTile<String>(
-            title: Text(type),
-            value: type,
-            groupValue: _selectedPropertyType,
-            onChanged: (value) {
-              setState(() {
-                _selectedPropertyType = value!;
-              });
-              Navigator.pop(context);
-            },
-          )).toList(),
-        ),
-      ),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Property Type'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children:
+                  ['All', ...AppConstants.propertyTypes]
+                      .map(
+                        (type) => RadioListTile<String>(
+                          title: Text(type),
+                          value: type,
+                          groupValue: _selectedPropertyType,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedPropertyType = value!;
+                            });
+                            Navigator.pop(context);
+                          },
+                        ),
+                      )
+                      .toList(),
+            ),
+          ),
     );
   }
 
   void _showLocationDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Location'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            'All Locations',
-            ...AppConstants.kenyanCounties.take(10), // Show top 10 counties
-          ].map((location) => RadioListTile<String>(
-            title: Text(location),
-            value: location,
-            groupValue: _selectedLocation,
-            onChanged: (value) {
-              setState(() {
-                _selectedLocation = value!;
-              });
-              Navigator.pop(context);
-            },
-          )).toList(),
-        ),
-      ),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Location'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children:
+                  [
+                        'All Locations',
+                        ...AppConstants.kenyanCounties.take(
+                          10,
+                        ), // Show top 10 counties
+                      ]
+                      .map(
+                        (location) => RadioListTile<String>(
+                          title: Text(location),
+                          value: location,
+                          groupValue: _selectedLocation,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedLocation = value!;
+                            });
+                            Navigator.pop(context);
+                          },
+                        ),
+                      )
+                      .toList(),
+            ),
+          ),
     );
   }
 
   void _showPriceDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Price Range'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('KES ${_minPrice.toInt()}k - ${_maxPrice.toInt()}k'),
-            RangeSlider(
-              values: RangeValues(_minPrice, _maxPrice),
-              min: 0,
-              max: 200000,
-              divisions: 20,
-              labels: RangeLabels(
-                'KES ${_minPrice.toInt()}k',
-                'KES ${_maxPrice.toInt()}k',
-              ),
-              onChanged: (values) {
-                setState(() {
-                  _minPrice = values.start;
-                  _maxPrice = values.end;
-                });
-              },
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Price Range'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('KES ${_minPrice.toInt()}k - ${_maxPrice.toInt()}k'),
+                RangeSlider(
+                  values: RangeValues(_minPrice, _maxPrice),
+                  min: 0,
+                  max: 200000,
+                  divisions: 20,
+                  labels: RangeLabels(
+                    'KES ${_minPrice.toInt()}k',
+                    'KES ${_maxPrice.toInt()}k',
+                  ),
+                  onChanged: (values) {
+                    setState(() {
+                      _minPrice = values.start;
+                      _maxPrice = values.end;
+                    });
+                  },
+                ),
+              ],
             ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Done'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Done'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }
@@ -1098,15 +1143,16 @@ class _FavoritesTabState extends State<_FavoritesTab> {
           ),
         ],
       ),
-      body: favoriteProperties.isEmpty
-          ? _buildEmptyState()
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: favoriteProperties.length,
-              itemBuilder: (context, index) {
-                return _buildFavoriteCard(favoriteProperties[index]);
-              },
-            ),
+      body:
+          favoriteProperties.isEmpty
+              ? _buildEmptyState()
+              : ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: favoriteProperties.length,
+                itemBuilder: (context, index) {
+                  return _buildFavoriteCard(favoriteProperties[index]);
+                },
+              ),
     );
   }
 
@@ -1115,24 +1161,20 @@ class _FavoritesTabState extends State<_FavoritesTab> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.favorite_outline,
-            size: 80,
-            color: AppColors.grey400,
-          ),
+          Icon(Icons.favorite_outline, size: 80, color: AppColors.grey400),
           const SizedBox(height: 16),
           Text(
             'No Favorites Yet',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 8),
           Text(
             'Start browsing properties and save your favorites here',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
@@ -1161,11 +1203,7 @@ class _FavoritesTabState extends State<_FavoritesTab> {
             child: Stack(
               children: [
                 const Center(
-                  child: Icon(
-                    Icons.image,
-                    size: 48,
-                    color: AppColors.grey400,
-                  ),
+                  child: Icon(Icons.image, size: 48, color: AppColors.grey400),
                 ),
                 Positioned(
                   top: 8,
@@ -1185,7 +1223,10 @@ class _FavoritesTabState extends State<_FavoritesTab> {
                   top: 8,
                   left: 8,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.success,
                       borderRadius: BorderRadius.circular(12),
@@ -1203,7 +1244,7 @@ class _FavoritesTabState extends State<_FavoritesTab> {
               ],
             ),
           ),
-          
+
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -1215,34 +1256,34 @@ class _FavoritesTabState extends State<_FavoritesTab> {
                     Expanded(
                       child: Text(
                         '${propertyId % 2 == 0 ? '2BR' : '3BR'} Modern Apartment',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w600),
                       ),
                     ),
                     PopupMenuButton(
-                      itemBuilder: (context) => [
-                        const PopupMenuItem(
-                          value: 'share',
-                          child: Row(
-                            children: [
-                              Icon(Icons.share),
-                              SizedBox(width: 8),
-                              Text('Share'),
-                            ],
-                          ),
-                        ),
-                        const PopupMenuItem(
-                          value: 'remove',
-                          child: Row(
-                            children: [
-                              Icon(Icons.delete, color: AppColors.error),
-                              SizedBox(width: 8),
-                              Text('Remove'),
-                            ],
-                          ),
-                        ),
-                      ],
+                      itemBuilder:
+                          (context) => [
+                            const PopupMenuItem(
+                              value: 'share',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.share),
+                                  SizedBox(width: 8),
+                                  Text('Share'),
+                                ],
+                              ),
+                            ),
+                            const PopupMenuItem(
+                              value: 'remove',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.delete, color: AppColors.error),
+                                  SizedBox(width: 8),
+                                  Text('Remove'),
+                                ],
+                              ),
+                            ),
+                          ],
                       onSelected: (value) {
                         if (value == 'remove') {
                           _removeFavorite(propertyId);
@@ -1267,7 +1308,7 @@ class _FavoritesTabState extends State<_FavoritesTab> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                
+
                 // Quick actions
                 Row(
                   children: [
@@ -1304,7 +1345,7 @@ class _FavoritesTabState extends State<_FavoritesTab> {
     setState(() {
       favoriteProperties.remove(propertyId);
     });
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Removed from favorites'),
@@ -1368,14 +1409,15 @@ class _MessagesTabState extends State<_MessagesTab> {
           ),
         ],
       ),
-      body: messages.isEmpty
-          ? _buildEmptyState()
-          : ListView.builder(
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                return _buildMessageCard(messages[index]);
-              },
-            ),
+      body:
+          messages.isEmpty
+              ? _buildEmptyState()
+              : ListView.builder(
+                itemCount: messages.length,
+                itemBuilder: (context, index) {
+                  return _buildMessageCard(messages[index]);
+                },
+              ),
     );
   }
 
@@ -1384,24 +1426,20 @@ class _MessagesTabState extends State<_MessagesTab> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.chat_bubble_outline,
-            size: 80,
-            color: AppColors.grey400,
-          ),
+          Icon(Icons.chat_bubble_outline, size: 80, color: AppColors.grey400),
           const SizedBox(height: 16),
           Text(
             'No Messages Yet',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 8),
           Text(
             'Start browsing properties and connect with landlords',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
             textAlign: TextAlign.center,
           ),
         ],
@@ -1429,15 +1467,16 @@ class _MessagesTabState extends State<_MessagesTab> {
               child: Text(
                 message.senderName,
                 style: TextStyle(
-                  fontWeight: message.isRead ? FontWeight.normal : FontWeight.bold,
+                  fontWeight:
+                      message.isRead ? FontWeight.normal : FontWeight.bold,
                 ),
               ),
             ),
             Text(
               _formatTime(message.timestamp),
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -1457,7 +1496,8 @@ class _MessagesTabState extends State<_MessagesTab> {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontWeight: message.isRead ? FontWeight.normal : FontWeight.w500,
+                fontWeight:
+                    message.isRead ? FontWeight.normal : FontWeight.w500,
               ),
             ),
             const SizedBox(height: 2),
@@ -1483,10 +1523,7 @@ class _MessagesTabState extends State<_MessagesTab> {
                 ),
               ),
             const SizedBox(height: 4),
-            const Icon(
-              Icons.chevron_right,
-              color: AppColors.grey400,
-            ),
+            const Icon(Icons.chevron_right, color: AppColors.grey400),
           ],
         ),
         onTap: () {
@@ -1520,9 +1557,7 @@ class _MessagesTabState extends State<_MessagesTab> {
     // Navigate to chat screen
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => ChatScreen(message: message),
-      ),
+      MaterialPageRoute(builder: (context) => ChatScreen(message: message)),
     );
   }
 }
@@ -1615,7 +1650,7 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             ),
           ),
-          
+
           // Message input
           Container(
             padding: const EdgeInsets.all(16),
@@ -1637,7 +1672,10 @@ class _ChatScreenState extends State<ChatScreen> {
                     decoration: const InputDecoration(
                       hintText: 'Type a message...',
                       border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                     ),
                     maxLines: null,
                   ),
@@ -1683,11 +1721,9 @@ class _ChatScreenState extends State<ChatScreen> {
     final text = _messageController.text.trim();
     if (text.isNotEmpty) {
       setState(() {
-        _messages.add(ChatMessage(
-          text: text,
-          isMe: true,
-          timestamp: DateTime.now(),
-        ));
+        _messages.add(
+          ChatMessage(text: text, isMe: true, timestamp: DateTime.now()),
+        );
       });
       _messageController.clear();
     }
@@ -1712,16 +1748,19 @@ class ChatMessage {
   });
 }
 
-class _ProfileTab extends StatefulWidget {
+class _ProfileTab extends ConsumerStatefulWidget {
   const _ProfileTab();
 
   @override
-  State<_ProfileTab> createState() => _ProfileTabState();
+  ConsumerState<_ProfileTab> createState() => _ProfileTabState();
 }
 
-class _ProfileTabState extends State<_ProfileTab> {
+class _ProfileTabState extends ConsumerState<_ProfileTab> {
   @override
   Widget build(BuildContext context) {
+    final userRole = ref.watch(userRoleProvider);
+    final isOwner = userRole == UserRole.owner;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
@@ -1747,10 +1786,7 @@ class _ProfileTabState extends State<_ProfileTab> {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.primaryGreen,
-                    AppColors.mpesaGreen,
-                  ],
+                  colors: [AppColors.primaryGreen, AppColors.mpesaGreen],
                 ),
               ),
               child: Column(
@@ -1760,7 +1796,9 @@ class _ProfileTabState extends State<_ProfileTab> {
                     backgroundColor: AppColors.primaryWhite,
                     child: Text(
                       'JK',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      style: Theme.of(
+                        context,
+                      ).textTheme.headlineMedium?.copyWith(
                         color: AppColors.primaryGreen,
                         fontWeight: FontWeight.bold,
                       ),
@@ -1788,10 +1826,32 @@ class _ProfileTabState extends State<_ProfileTab> {
                       color: AppColors.primaryWhite.withOpacity(0.9),
                     ),
                   ),
+                  const SizedBox(height: 12),
+                  // User role indicator
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryWhite.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: AppColors.primaryWhite.withOpacity(0.3),
+                      ),
+                    ),
+                    child: Text(
+                      isOwner ? 'Property Owner' : 'Tenant',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.primaryWhite,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
-            
+
             // Stats cards
             Padding(
               padding: const EdgeInsets.all(16),
@@ -1811,14 +1871,21 @@ class _ProfileTabState extends State<_ProfileTab> {
                 ],
               ),
             ),
-            
+
             // Menu items
             _buildMenuSection([
               _buildMenuItem(
                 'My Properties',
                 'Manage your listed properties',
                 Icons.home_work,
-                () {},
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PropertyOwnerDashboardPage(),
+                    ),
+                  );
+                },
               ),
               _buildMenuItem(
                 'Payment History',
@@ -1839,10 +1906,18 @@ class _ProfileTabState extends State<_ProfileTab> {
                 () {},
               ),
             ]),
-            
+
             const SizedBox(height: 16),
-            
+
             _buildMenuSection([
+              _buildMenuItem(
+                'Switch to ${isOwner ? 'Tenant' : 'Owner'} Mode',
+                isOwner
+                    ? 'Looking for a place to rent?'
+                    : 'Have properties to rent out?',
+                isOwner ? Icons.search : Icons.home_work,
+                () => _showRoleSwitchDialog(),
+              ),
               _buildMenuItem(
                 'Account Settings',
                 'Update your account information',
@@ -1868,9 +1943,9 @@ class _ProfileTabState extends State<_ProfileTab> {
                 () {},
               ),
             ]),
-            
+
             const SizedBox(height: 24),
-            
+
             // Logout button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -1888,7 +1963,7 @@ class _ProfileTabState extends State<_ProfileTab> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 24),
           ],
         ),
@@ -1902,11 +1977,7 @@ class _ProfileTabState extends State<_ProfileTab> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Icon(
-              icon,
-              color: AppColors.primaryGreen,
-              size: 24,
-            ),
+            Icon(icon, color: AppColors.primaryGreen, size: 24),
             const SizedBox(height: 8),
             Text(
               value,
@@ -1917,9 +1988,9 @@ class _ProfileTabState extends State<_ProfileTab> {
             ),
             Text(
               title,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -1930,9 +2001,7 @@ class _ProfileTabState extends State<_ProfileTab> {
   Widget _buildMenuSection(List<Widget> items) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: items,
-      ),
+      child: Column(children: items),
     );
   }
 
@@ -1943,21 +2012,15 @@ class _ProfileTabState extends State<_ProfileTab> {
     VoidCallback onTap,
   ) {
     return ListTile(
-      leading: Icon(
-        icon,
-        color: AppColors.primaryGreen,
-      ),
+      leading: Icon(icon, color: AppColors.primaryGreen),
       title: Text(title),
       subtitle: Text(
         subtitle,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: AppColors.textSecondary,
-        ),
+        style: Theme.of(
+          context,
+        ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
       ),
-      trailing: const Icon(
-        Icons.chevron_right,
-        color: AppColors.grey400,
-      ),
+      trailing: const Icon(Icons.chevron_right, color: AppColors.grey400),
       onTap: onTap,
     );
   }
@@ -1965,32 +2028,858 @@ class _ProfileTabState extends State<_ProfileTab> {
   void _showLogoutDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Sign Out'),
-        content: const Text('Are you sure you want to sign out?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Sign Out'),
+            content: const Text('Are you sure you want to sign out?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  // Handle logout
+                  _handleLogout();
+                },
+                child: const Text('Sign Out'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // Handle logout
-              _handleLogout();
-            },
-            child: const Text('Sign Out'),
+    );
+  }
+
+  void _handleLogout() {
+    // Implement logout logic
+    Navigator.of(context).pushNamedAndRemoveUntil('/auth', (route) => false);
+  }
+
+  void _showRoleSwitchDialog() {
+    final userRole = ref.read(userRoleProvider);
+    final isOwner = userRole == UserRole.owner;
+    final newRole = isOwner ? UserRole.tenant : UserRole.owner;
+
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text('Switch to ${newRole.title}?'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  isOwner
+                      ? 'Switch to tenant mode to browse and rent properties.'
+                      : 'Switch to owner mode to list and manage your properties.',
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Your current data will be preserved and you can switch back anytime.',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () async {
+                  try {
+                    await ref.read(userProvider.notifier).setUserRole(newRole);
+                    if (mounted) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Switched to ${newRole.title} mode successfully!',
+                          ),
+                          backgroundColor: AppColors.primaryGreen,
+                        ),
+                      );
+                      // Reset to first tab
+                      setState(() {
+                        widget.key; // Trigger rebuild
+                      });
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error switching roles: $e'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  }
+                },
+                child: const Text('Switch'),
+              ),
+            ],
+          ),
+    );
+  }
+}
+
+// Owner-specific tabs
+class _OwnerDashboardTab extends StatefulWidget {
+  const _OwnerDashboardTab();
+
+  @override
+  State<_OwnerDashboardTab> createState() => _OwnerDashboardTabState();
+}
+
+class _OwnerDashboardTabState extends State<_OwnerDashboardTab> {
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Welcome back!',
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Manage your properties and tenants',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const NotificationsPage(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.notifications_outlined),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 24),
+
+            // Stats Cards
+            Row(
+              children: [
+                Expanded(
+                  child: _buildStatCard(
+                    'Total Properties',
+                    '12',
+                    Icons.home_work,
+                    AppColors.primaryGreen,
+                    theme,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildStatCard(
+                    'Occupied',
+                    '10',
+                    Icons.people,
+                    Colors.blue,
+                    theme,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+            Row(
+              children: [
+                Expanded(
+                  child: _buildStatCard(
+                    'Monthly Revenue',
+                    'KES 850K',
+                    Icons.trending_up,
+                    Colors.green,
+                    theme,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildStatCard(
+                    'Pending Apps',
+                    '5',
+                    Icons.assignment,
+                    Colors.orange,
+                    theme,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 24),
+
+            // Quick Actions
+            Text(
+              'Quick Actions',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            Row(
+              children: [
+                Expanded(
+                  child: _buildActionCard(
+                    'Add Property',
+                    Icons.add_home,
+                    AppColors.primaryGreen,
+                    () {
+                      _showAddPropertyDialog(context);
+                    },
+                    theme,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildActionCard(
+                    'Upload Photos',
+                    Icons.photo_camera,
+                    Colors.orange,
+                    () {
+                      _showPhotoUploadDialog(context);
+                    },
+                    theme,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildActionCard(
+                    'View Reports',
+                    Icons.analytics,
+                    Colors.blue,
+                    () {},
+                    theme,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildActionCard(
+                    'Notifications',
+                    Icons.notifications,
+                    Colors.purple,
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const NotificationsPage(),
+                        ),
+                      );
+                    },
+                    theme,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 24),
+
+            // Recent Activities
+            Text(
+              'Recent Activities',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            _buildActivityCard(
+              'New application for Westlands Apartment',
+              'Sarah Wanjiku applied for 2BR apartment',
+              '2 hours ago',
+              Icons.assignment,
+              theme,
+            ),
+            _buildActivityCard(
+              'Rent payment received',
+              'John Doe paid KES 45,000 for November',
+              '1 day ago',
+              Icons.payment,
+              theme,
+            ),
+            _buildActivityCard(
+              'Maintenance request',
+              'Kitchen sink issue reported at Karen Villa',
+              '2 days ago',
+              Icons.build,
+              theme,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatCard(
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+    ThemeData theme,
+  ) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(children: [Icon(icon, color: color, size: 24), const Spacer()]),
+            const SizedBox(height: 12),
+            Text(
+              value,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              title,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAddPropertyDialog(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AddPropertyPage()),
+    );
+  }
+
+  void _showPhotoUploadDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Upload Property Photos'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Select property photos to upload:'),
+                const SizedBox(height: 16),
+                ImagePickerWidget(
+                  maxImages: 5,
+                  title: 'Property Photos',
+                  subtitle: 'Add up to 5 photos of your property',
+                  onImagesChanged: (images) {
+                    // Handle image selection
+                    print('Selected ${images.length} images');
+                  },
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Photos uploaded successfully!'),
+                    ),
+                  );
+                },
+                child: const Text('Upload'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  Widget _buildActionCard(
+    String title,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+    ThemeData theme,
+  ) {
+    return Card(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: color, size: 24),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                title,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActivityCard(
+    String title,
+    String subtitle,
+    String time,
+    IconData icon,
+    ThemeData theme,
+  ) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: AppColors.primaryGreen.withOpacity(0.1),
+          child: Icon(icon, color: AppColors.primaryGreen),
+        ),
+        title: Text(title),
+        subtitle: Text(subtitle),
+        trailing: Text(
+          time,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _MyPropertiesTab extends StatelessWidget {
+  const _MyPropertiesTab();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return SafeArea(
+      child: Column(
+        children: [
+          // Header
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [AppColors.primaryGreen.withOpacity(0.1), Colors.white],
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'My Properties',
+                          style: theme.textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          '5 properties • 3 occupied',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  FilledButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AddPropertyPage(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add Property'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.primaryGreen,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Properties Grid
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 0.8,
+                ),
+                itemCount: _getSampleProperties().length,
+                itemBuilder: (context, index) {
+                  final property = _getSampleProperties()[index];
+                  return PropertyCard(
+                    title: property['name']!,
+                    location: property['location']!,
+                    price: property['rent']!,
+                    imageUrl: property['image'] ?? '',
+                    propertyType: property['type']!,
+                    bedrooms: int.parse(property['bedrooms']!),
+                    bathrooms: int.parse(property['bathrooms']!),
+                    isOccupied: property['status'] == 'Occupied',
+                    onTap: () {
+                      // Navigate to property details
+                    },
+                    onEdit: () {
+                      // Navigate to edit property
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AddPropertyPage(),
+                        ),
+                      );
+                    },
+                    onDelete: () {
+                      // Show delete confirmation
+                      _showDeleteConfirmation(context, property['name']!);
+                    },
+                  );
+                },
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
-  void _handleLogout() {
-    // Implement logout logic
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      '/auth',
-      (route) => false,
+  List<Map<String, String>> _getSampleProperties() {
+    return [
+      {
+        'name': 'Westlands Apartment',
+        'location': 'Westlands, Nairobi',
+        'rent': '45,000',
+        'status': 'Occupied',
+        'type': 'Apartment',
+        'bedrooms': '2',
+        'bathrooms': '2',
+        'image':
+            'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400',
+      },
+      {
+        'name': 'Karen Villa',
+        'location': 'Karen, Nairobi',
+        'rent': '85,000',
+        'status': 'Occupied',
+        'type': 'Villa',
+        'bedrooms': '4',
+        'bathrooms': '3',
+        'image':
+            'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400',
+      },
+      {
+        'name': 'Kilimani Studio',
+        'location': 'Kilimani, Nairobi',
+        'rent': '25,000',
+        'status': 'Vacant',
+        'type': 'Studio',
+        'bedrooms': '1',
+        'bathrooms': '1',
+        'image':
+            'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400',
+      },
+      {
+        'name': 'Lavington House',
+        'location': 'Lavington, Nairobi',
+        'rent': '120,000',
+        'status': 'Occupied',
+        'type': 'House',
+        'bedrooms': '5',
+        'bathrooms': '4',
+        'image':
+            'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400',
+      },
+      {
+        'name': 'South B Bedsitter',
+        'location': 'South B, Nairobi',
+        'rent': '18,000',
+        'status': 'Vacant',
+        'type': 'Bedsitter',
+        'bedrooms': '1',
+        'bathrooms': '1',
+        'image':
+            'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400',
+      },
+    ];
+  }
+
+  void _showDeleteConfirmation(BuildContext context, String propertyName) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Delete Property'),
+            content: Text(
+              'Are you sure you want to delete "$propertyName"? This action cannot be undone.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('$propertyName deleted successfully'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                },
+                style: FilledButton.styleFrom(backgroundColor: Colors.red),
+                child: const Text('Delete'),
+              ),
+            ],
+          ),
+    );
+  }
+}
+
+class _ApplicationsTab extends StatelessWidget {
+  const _ApplicationsTab();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return SafeArea(
+      child: Column(
+        children: [
+          // Header
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Rental Applications',
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Chip(
+                  label: const Text('5 Pending'),
+                  backgroundColor: Colors.orange.withOpacity(0.1),
+                  labelStyle: const TextStyle(color: Colors.orange),
+                ),
+              ],
+            ),
+          ),
+
+          // Applications List
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: 5,
+              itemBuilder: (context, index) {
+                return _buildApplicationCard(index, theme);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildApplicationCard(int index, ThemeData theme) {
+    final applications = [
+      {
+        'name': 'Sarah Wanjiku',
+        'property': 'Westlands Apartment',
+        'date': '2 hours ago',
+        'status': 'Pending',
+      },
+      {
+        'name': 'Michael Ochieng',
+        'property': 'Karen Villa',
+        'date': '1 day ago',
+        'status': 'Approved',
+      },
+      {
+        'name': 'Grace Muthoni',
+        'property': 'Kilimani Studio',
+        'date': '2 days ago',
+        'status': 'Pending',
+      },
+      {
+        'name': 'David Kimani',
+        'property': 'Lavington House',
+        'date': '3 days ago',
+        'status': 'Rejected',
+      },
+      {
+        'name': 'Jane Achieng',
+        'property': 'South B Bedsitter',
+        'date': '1 week ago',
+        'status': 'Pending',
+      },
+    ];
+
+    final application = applications[index];
+    final status = application['status']!;
+    Color statusColor;
+
+    switch (status) {
+      case 'Approved':
+        statusColor = Colors.green;
+        break;
+      case 'Rejected':
+        statusColor = Colors.red;
+        break;
+      default:
+        statusColor = Colors.orange;
+    }
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: AppColors.primaryGreen.withOpacity(0.1),
+                  child: Text(
+                    application['name']![0],
+                    style: const TextStyle(
+                      color: AppColors.primaryGreen,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        application['name']!,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Applied for ${application['property']}',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: statusColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    status,
+                    style: TextStyle(
+                      color: statusColor,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+            Row(
+              children: [
+                Text(
+                  application['date']!,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const Spacer(),
+                if (status == 'Pending') ...[
+                  TextButton(onPressed: () {}, child: const Text('Reject')),
+                  FilledButton(onPressed: () {}, child: const Text('Approve')),
+                ] else ...[
+                  TextButton(
+                    onPressed: () {},
+                    child: const Text('View Details'),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
