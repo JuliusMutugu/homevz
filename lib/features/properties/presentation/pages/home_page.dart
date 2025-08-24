@@ -4,12 +4,16 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/providers/user_provider.dart';
 import '../../../../core/models/user_role.dart';
-import '../../../../core/services/notification_service.dart';
 import '../../../../core/widgets/image_picker_widget.dart';
 import '../../../notifications/pages/notifications_page.dart';
 import '../../../community/pages/community_page.dart';
+import '../../../payments/pages/payment_history_page.dart';
+import '../../../payments/pages/owner_payment_reports_page.dart';
+import '../../../reports/pages/reports_page.dart';
+import '../../../bookings/pages/booking_history_page.dart';
 import 'add_property_page.dart';
 import 'property_owner_dashboard.dart';
+import 'properties_list_page.dart';
 import '../../../profile/pages/profile_page.dart';
 import '../../property_details_page.dart';
 import '../widgets/property_card.dart';
@@ -31,6 +35,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
+      appBar: isOwner ? _buildOwnerAppBar(context) : null,
       drawer: _buildNavigationDrawer(context),
       body: IndexedStack(
         index: _currentIndex,
@@ -139,6 +144,85 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
   }
 
+  PreferredSizeWidget _buildOwnerAppBar(BuildContext context) {
+    return AppBar(
+      title: const Text(
+        'Property Owner Dashboard',
+        style: TextStyle(fontWeight: FontWeight.w600),
+      ),
+      backgroundColor: AppColors.primaryGreen,
+      foregroundColor: AppColors.textOnPrimary,
+      elevation: 0,
+      actions: [
+        IconButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const NotificationsPage(),
+              ),
+            );
+          },
+          icon: const Icon(Icons.notifications_outlined),
+          tooltip: 'Notifications',
+        ),
+        IconButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AddPropertyPage()),
+            );
+          },
+          icon: const Icon(Icons.add_home_outlined),
+          tooltip: 'Add Property',
+        ),
+        PopupMenuButton<String>(
+          onSelected: (value) {
+            switch (value) {
+              case 'settings':
+                _showSettingsDialog(context);
+                break;
+              case 'help':
+                _showHelpDialog(context);
+                break;
+              case 'logout':
+                _showLogoutDialog(context);
+                break;
+            }
+          },
+          itemBuilder:
+              (context) => [
+                const PopupMenuItem(
+                  value: 'settings',
+                  child: ListTile(
+                    leading: Icon(Icons.settings_outlined),
+                    title: Text('Settings'),
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+                const PopupMenuItem(
+                  value: 'help',
+                  child: ListTile(
+                    leading: Icon(Icons.help_outline),
+                    title: Text('Help & Support'),
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+                const PopupMenuDivider(),
+                const PopupMenuItem(
+                  value: 'logout',
+                  child: ListTile(
+                    leading: Icon(Icons.logout_outlined),
+                    title: Text('Sign Out'),
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+              ],
+        ),
+      ],
+    );
+  }
+
   Widget _buildNavigationDrawer(BuildContext context) {
     final theme = Theme.of(context);
 
@@ -203,6 +287,15 @@ class _HomePageState extends ConsumerState<HomePage> {
                   'Home',
                   () => Navigator.pop(context),
                 ),
+                _buildDrawerItem(context, Icons.list, 'All Properties', () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PropertiesListPage(),
+                    ),
+                  );
+                }),
                 _buildDrawerItem(context, Icons.person, 'My Profile', () {
                   Navigator.pop(context);
                   setState(() {
@@ -223,14 +316,29 @@ class _HomePageState extends ConsumerState<HomePage> {
                 }),
                 _buildDrawerItem(context, Icons.history, 'Booking History', () {
                   Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Booking History opened')),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const BookingHistoryPage(),
+                    ),
                   );
                 }),
                 _buildDrawerItem(context, Icons.payment, 'Payment History', () {
                   Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Payment History opened')),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PaymentHistoryPage(),
+                    ),
+                  );
+                }),
+                _buildDrawerItem(context, Icons.analytics, 'Reports', () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ReportsPage(),
+                    ),
                   );
                 }),
                 _buildDrawerItem(
@@ -396,27 +504,198 @@ class _HomePageState extends ConsumerState<HomePage> {
           ),
     );
   }
+
+  void _showSettingsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Settings'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.notifications_outlined),
+                  title: const Text('Notification Settings'),
+                  subtitle: const Text('Manage your notification preferences'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Notification settings coming soon!'),
+                      ),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.security_outlined),
+                  title: const Text('Privacy & Security'),
+                  subtitle: const Text('Manage your privacy settings'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Privacy settings coming soon!'),
+                      ),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.payment_outlined),
+                  title: const Text('Payment Settings'),
+                  subtitle: const Text('M-Pesa and banking preferences'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Payment settings coming soon!'),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Close'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _showHelpDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Help & Support'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Need help? We\'re here for you!',
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 16),
+                _buildHelpOption(
+                  Icons.phone_outlined,
+                  'Call Support',
+                  '+254 700 123 456',
+                  () => ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Calling support...')),
+                  ),
+                ),
+                _buildHelpOption(
+                  Icons.email_outlined,
+                  'Email Support',
+                  'support@homevz.co.ke',
+                  () => ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Opening email...')),
+                  ),
+                ),
+                _buildHelpOption(
+                  Icons.chat_outlined,
+                  'Live Chat',
+                  'Chat with our team',
+                  () => ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Live chat coming soon!')),
+                  ),
+                ),
+                _buildHelpOption(
+                  Icons.help_outline,
+                  'FAQ',
+                  'Frequently asked questions',
+                  () => ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('FAQ page coming soon!')),
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Close'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  Widget _buildHelpOption(
+    IconData icon,
+    String title,
+    String subtitle,
+    VoidCallback onTap,
+  ) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            Icon(icon, color: AppColors.primaryGreen),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: AppColors.grey400),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
-class _HomeTab extends StatelessWidget {
+class _HomeTab extends StatefulWidget {
   const _HomeTab();
+
+  @override
+  State<_HomeTab> createState() => _HomeTabState();
+}
+
+class _HomeTabState extends State<_HomeTab> {
+  final TextEditingController _searchController = TextEditingController();
+  String _selectedLocation = 'All Locations';
+  String _selectedPropertyType = 'All Types';
+  double _maxPrice = 100000;
+  bool _showFilters = false;
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
-        // App bar
+        // Enhanced App bar with search
         SliverAppBar(
           backgroundColor: AppColors.primaryGreen,
           foregroundColor: AppColors.textOnPrimary,
-          expandedHeight: 120,
+          expandedHeight: 180,
           floating: false,
           pinned: true,
           flexibleSpace: FlexibleSpaceBar(
-            title: Text(
-              'Welcome to ${AppConstants.appName}',
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-            ),
             background: Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -425,15 +704,95 @@ class _HomeTab extends StatelessWidget {
                   colors: [AppColors.primaryGreen, AppColors.mpesaGreen],
                 ),
               ),
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 60, 16, 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Find Your Perfect Home',
+                        style: Theme.of(
+                          context,
+                        ).textTheme.headlineSmall?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Discover thousands of properties across Kenya',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.white.withOpacity(0.9),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      // Search bar
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            hintText: 'Search by location, property type...',
+                            prefixIcon: const Icon(
+                              Icons.search,
+                              color: AppColors.primaryGreen,
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _showFilters ? Icons.filter_list : Icons.tune,
+                                color: AppColors.primaryGreen,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _showFilters = !_showFilters;
+                                });
+                              },
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                          ),
+                          onSubmitted: (query) {
+                            _performSearch(query);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
           actions: [
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NotificationsPage(),
+                  ),
+                );
+              },
               icon: const Icon(Icons.notifications_outlined),
             ),
           ],
         ),
+
+        // Filter section (conditionally shown)
+        if (_showFilters) SliverToBoxAdapter(child: _buildFilterSection()),
 
         // Content
         SliverPadding(
@@ -465,6 +824,285 @@ class _HomeTab extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Widget _buildFilterSection() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      color: AppColors.grey50,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: _buildFilterChip(
+                  'Location',
+                  _selectedLocation,
+                  () => _showLocationDialog(),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildFilterChip(
+                  'Property Type',
+                  _selectedPropertyType,
+                  () => _showPropertyTypeDialog(),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildFilterChip(
+                  'Max Price',
+                  'KES ${_maxPrice.toInt() == 100000 ? '100K+' : '${(_maxPrice / 1000).toInt()}K'}',
+                  () => _showPriceDialog(),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: _applyFilters,
+                  icon: const Icon(Icons.search, size: 18),
+                  label: const Text('Apply Filters'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryGreen,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChip(String label, String value, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          border: Border.all(color: AppColors.grey300),
+          borderRadius: BorderRadius.circular(8),
+          color: AppColors.surface,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+            ),
+            Text(
+              value,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _performSearch(String query) {
+    // Navigate to Properties List page with search parameters
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => PropertiesListPage(
+              initialSearchQuery: query,
+              initialLocation:
+                  _selectedLocation != 'All Locations'
+                      ? _selectedLocation
+                      : null,
+            ),
+      ),
+    );
+  }
+
+  void _showLocationDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Select Location'),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: ListView(
+                shrinkWrap: true,
+                children:
+                    [
+                          'All Locations',
+                          'Nairobi',
+                          'Mombasa',
+                          'Kisumu',
+                          'Nakuru',
+                          'Eldoret',
+                          'Thika',
+                          'Kilifi',
+                          'Malindi',
+                        ]
+                        .map(
+                          (location) => ListTile(
+                            title: Text(location),
+                            onTap: () {
+                              setState(() {
+                                _selectedLocation = location;
+                              });
+                              Navigator.pop(context);
+                            },
+                            trailing:
+                                _selectedLocation == location
+                                    ? const Icon(
+                                      Icons.check,
+                                      color: AppColors.primaryGreen,
+                                    )
+                                    : null,
+                          ),
+                        )
+                        .toList(),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _showPropertyTypeDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Select Property Type'),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: ListView(
+                shrinkWrap: true,
+                children:
+                    [
+                          'All Types',
+                          'Apartment',
+                          'House',
+                          'Bedsitter',
+                          'Studio',
+                          'Villa',
+                          'Townhouse',
+                          'Land',
+                        ]
+                        .map(
+                          (type) => ListTile(
+                            title: Text(type),
+                            onTap: () {
+                              setState(() {
+                                _selectedPropertyType = type;
+                              });
+                              Navigator.pop(context);
+                            },
+                            trailing:
+                                _selectedPropertyType == type
+                                    ? const Icon(
+                                      Icons.check,
+                                      color: AppColors.primaryGreen,
+                                    )
+                                    : null,
+                          ),
+                        )
+                        .toList(),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _showPriceDialog() {
+    double tempMaxPrice = _maxPrice;
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Set Maximum Price'),
+            content: StatefulBuilder(
+              builder:
+                  (context, setDialogState) => Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Maximum: KES ${tempMaxPrice.toInt() == 100000 ? '100K+' : '${(tempMaxPrice / 1000).toInt()}K'}',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 16),
+                      Slider(
+                        value: tempMaxPrice,
+                        min: 10000,
+                        max: 100000,
+                        divisions: 18,
+                        activeColor: AppColors.primaryGreen,
+                        onChanged: (value) {
+                          setDialogState(() {
+                            tempMaxPrice = value;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '10K',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          Text(
+                            '100K+',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () {
+                  setState(() {
+                    _maxPrice = tempMaxPrice;
+                  });
+                  Navigator.pop(context);
+                },
+                child: const Text('Apply'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _applyFilters() {
+    // Apply filters and search
+    _performSearch(_searchController.text);
   }
 
   Widget _buildQuickActions(BuildContext context) {
@@ -520,7 +1158,7 @@ class _HomeTab extends StatelessWidget {
                     'Buy Land',
                     Icons.landscape,
                     AppColors.terracotta,
-                    () {},
+                    () => _showLandSearchDialog(context),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -530,7 +1168,7 @@ class _HomeTab extends StatelessWidget {
                     'Get Loan',
                     Icons.account_balance,
                     AppColors.savanna,
-                    () {},
+                    () => _showLoanInfoDialog(context),
                   ),
                 ),
               ],
@@ -596,7 +1234,19 @@ class _HomeTab extends StatelessWidget {
           ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
         if (action.isNotEmpty)
-          TextButton(onPressed: () {}, child: Text(action)),
+          TextButton(
+            onPressed: () {
+              if (action == 'View All') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PropertiesListPage(),
+                  ),
+                );
+              }
+            },
+            child: Text(action),
+          ),
       ],
     );
   }
@@ -756,6 +1406,154 @@ class _HomeTab extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  void _showLandSearchDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Search Land for Sale'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                decoration: const InputDecoration(
+                  labelText: 'Location',
+                  hintText: 'Enter county or area',
+                  prefixIcon: Icon(Icons.location_on),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                decoration: const InputDecoration(
+                  labelText: 'Price Range (KES)',
+                  hintText: 'e.g., 500,000 - 2,000,000',
+                  prefixIcon: Icon(Icons.money),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                decoration: const InputDecoration(
+                  labelText: 'Size (Acres)',
+                  hintText: 'Minimum size required',
+                  prefixIcon: Icon(Icons.crop_landscape),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                // TODO: Implement land search functionality
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Land search functionality coming soon!'),
+                  ),
+                );
+              },
+              child: const Text('Search'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showLoanInfoDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Housing Loan Information'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Available Loan Options:',
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              _buildLoanOption(
+                'Personal Housing Loan',
+                'Up to KES 10M',
+                '12% - 15% interest',
+                '1-25 years',
+              ),
+              const SizedBox(height: 12),
+              _buildLoanOption(
+                'M-Pesa Loan',
+                'Up to KES 500K',
+                '8% - 12% interest',
+                '6 months - 2 years',
+              ),
+              const SizedBox(height: 12),
+              _buildLoanOption(
+                'Government Housing Fund',
+                'Subsidized rates',
+                '5% - 8% interest',
+                '15-30 years',
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Close'),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                // TODO: Navigate to loan application page
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Loan application page coming soon!'),
+                  ),
+                );
+              },
+              child: const Text('Apply Now'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildLoanOption(
+    String title,
+    String amount,
+    String interest,
+    String tenure,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.acacia.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.acacia.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          ),
+          const SizedBox(height: 4),
+          Text('Amount: $amount', style: const TextStyle(fontSize: 12)),
+          Text('Interest: $interest', style: const TextStyle(fontSize: 12)),
+          Text('Tenure: $tenure', style: const TextStyle(fontSize: 12)),
+        ],
+      ),
     );
   }
 }
