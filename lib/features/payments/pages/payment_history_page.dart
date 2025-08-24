@@ -56,7 +56,7 @@ class _PaymentHistoryPageState extends ConsumerState<PaymentHistoryPage>
           controller: _tabController,
           indicatorColor: AppColors.textOnPrimary,
           labelColor: AppColors.textOnPrimary,
-          unselectedLabelColor: AppColors.textOnPrimary.withOpacity(0.7),
+          unselectedLabelColor: AppColors.textOnPrimary.withValues(alpha: 0.7),
           isScrollable: true,
           tabs: const [
             Tab(text: 'All Payments'),
@@ -78,7 +78,7 @@ class _PaymentHistoryPageState extends ConsumerState<PaymentHistoryPage>
               color: AppColors.surface,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.withValues(alpha: 0.1),
                   spreadRadius: 1,
                   blurRadius: 4,
                   offset: const Offset(0, 2),
@@ -144,7 +144,7 @@ class _PaymentHistoryPageState extends ConsumerState<PaymentHistoryPage>
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [AppColors.primaryGreen.withOpacity(0.1), Colors.white],
+          colors: [AppColors.primaryGreen.withValues(alpha: 0.1), Colors.white],
         ),
       ),
       child: Row(
@@ -295,9 +295,9 @@ class _PaymentHistoryPageState extends ConsumerState<PaymentHistoryPage>
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.1),
+                    color: statusColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: statusColor.withOpacity(0.3)),
+                    border: Border.all(color: statusColor.withValues(alpha: 0.3)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -1062,9 +1062,9 @@ class PaymentDetailsPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: statusColor.withOpacity(0.1),
+        color: statusColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: statusColor.withOpacity(0.3)),
+        border: Border.all(color: statusColor.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [

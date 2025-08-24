@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/image_upload_service.dart';
-import 'image_display_widget.dart';
 
 class ImagePickerWidget extends StatefulWidget {
   final List<File> initialImages;
@@ -14,7 +13,7 @@ class ImagePickerWidget extends StatefulWidget {
   final String? subtitle;
 
   const ImagePickerWidget({
-    Key? key,
+    super.key,
     this.initialImages = const [],
     this.maxImages = 10,
     this.itemHeight = 120,
@@ -22,7 +21,7 @@ class ImagePickerWidget extends StatefulWidget {
     required this.onImagesChanged,
     this.title,
     this.subtitle,
-  }) : super(key: key);
+  });
 
   @override
   State<ImagePickerWidget> createState() => _ImagePickerWidgetState();
@@ -194,7 +193,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
   }
 
   Future<void> _showImageSourceDialog() async {
-    final source = await showDialog<ImageSource>(
+    final source = await showDialog<dynamic>(
       context: context,
       builder:
           (context) => AlertDialog(
@@ -225,10 +224,10 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
     );
 
     if (source != null) {
-      if (source == 'multiple') {
+      if (source is String && source == 'multiple') {
         await _pickMultipleImages();
-      } else {
-        await _pickSingleImage(source as ImageSource);
+      } else if (source is ImageSource) {
+        await _pickSingleImage(source);
       }
     }
   }
@@ -333,12 +332,12 @@ class ProfileImagePicker extends StatefulWidget {
   final double size;
 
   const ProfileImagePicker({
-    Key? key,
+    super.key,
     this.initialImage,
     this.initialImageUrl,
     required this.onImageChanged,
     this.size = 120,
-  }) : super(key: key);
+  });
 
   @override
   State<ProfileImagePicker> createState() => _ProfileImagePickerState();

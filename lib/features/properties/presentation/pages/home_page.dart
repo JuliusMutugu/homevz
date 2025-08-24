@@ -237,7 +237,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 end: Alignment.bottomRight,
                 colors: [
                   AppColors.primaryGreen,
-                  AppColors.primaryGreen.withOpacity(0.8),
+                  AppColors.primaryGreen.withValues(alpha: 0.8),
                 ],
               ),
             ),
@@ -268,7 +268,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 Text(
                   'john.doe@email.com',
                   style: TextStyle(
-                    color: AppColors.textOnPrimary.withOpacity(0.8),
+                    color: AppColors.textOnPrimary.withValues(alpha: 0.8),
                     fontSize: 14,
                   ),
                 ),
@@ -341,6 +341,20 @@ class _HomePageState extends ConsumerState<HomePage> {
                     ),
                   );
                 }),
+                _buildDrawerItem(
+                  context,
+                  Icons.receipt_long,
+                  'Payment Reports',
+                  () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const OwnerPaymentReportsPage(),
+                      ),
+                    );
+                  },
+                ),
                 _buildDrawerItem(
                   context,
                   Icons.business,
@@ -723,7 +737,7 @@ class _HomeTabState extends State<_HomeTab> {
                       Text(
                         'Discover thousands of properties across Kenya',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -734,7 +748,7 @@ class _HomeTabState extends State<_HomeTab> {
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
+                              color: Colors.black.withValues(alpha: 0.1),
                               blurRadius: 4,
                               offset: const Offset(0, 2),
                             ),
@@ -1192,9 +1206,9 @@ class _HomeTabState extends State<_HomeTab> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Column(
           children: [
@@ -1379,30 +1393,196 @@ class _HomeTabState extends State<_HomeTab> {
   }
 
   Widget _buildRecentProperties() {
+    final recentProperties = [
+      {
+        'title': '3BR House in Westlands',
+        'price': 'KES 80,000/month',
+        'location': 'Westlands, Nairobi',
+        'image':
+            'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&q=80',
+        'rating': 4.8,
+      },
+      {
+        'title': '2BR Apartment in Kilimani',
+        'price': 'KES 55,000/month',
+        'location': 'Kilimani, Nairobi',
+        'image':
+            'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&q=80',
+        'rating': 4.6,
+      },
+      {
+        'title': 'Studio in South B',
+        'price': 'KES 28,000/month',
+        'location': 'South B, Nairobi',
+        'image':
+            'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&q=80',
+        'rating': 4.4,
+      },
+    ];
+
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: 3,
+      itemCount: recentProperties.length,
       itemBuilder: (context, index) {
+        final property = recentProperties[index];
         return Card(
           margin: const EdgeInsets.only(bottom: 12),
-          child: ListTile(
-            leading: Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: AppColors.grey200,
-                borderRadius: BorderRadius.circular(8),
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: InkWell(
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Opening ${property['title']}...'),
+                  duration: const Duration(seconds: 1),
+                ),
+              );
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  // Property Image with enhanced styling
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        property['image'] as String,
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Container(
+                            color: AppColors.grey200,
+                            child: const Center(
+                              child: SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    AppColors.primaryGreen,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: AppColors.grey200,
+                            child: const Center(
+                              child: Icon(
+                                Icons.image_not_supported,
+                                size: 24,
+                                color: AppColors.grey400,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+
+                  // Property Details
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          property['title'] as String,
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(fontWeight: FontWeight.w600),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.location_on,
+                              size: 14,
+                              color: AppColors.textSecondary,
+                            ),
+                            const SizedBox(width: 2),
+                            Expanded(
+                              child: Text(
+                                property['location'] as String,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(color: AppColors.textSecondary),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          property['price'] as String,
+                          style: Theme.of(
+                            context,
+                          ).textTheme.titleSmall?.copyWith(
+                            color: AppColors.primaryGreen,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(Icons.star, size: 14, color: Colors.amber),
+                            const SizedBox(width: 2),
+                            Text(
+                              '${property['rating']}',
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(fontWeight: FontWeight.w500),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Favorite Button
+                  Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.grey100,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: IconButton(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Added to favorites!'),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.favorite_outline),
+                      iconSize: 20,
+                      color: AppColors.primaryGreen,
+                    ),
+                  ),
+                ],
               ),
-              child: const Icon(Icons.image, color: AppColors.grey400),
             ),
-            title: Text('3BR House in Westlands'),
-            subtitle: Text('KES 80,000/month • Nairobi'),
-            trailing: IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.favorite_outline),
-            ),
-            onTap: () {},
           ),
         );
       },
@@ -1537,9 +1717,9 @@ class _HomeTabState extends State<_HomeTab> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.acacia.withOpacity(0.1),
+        color: AppColors.acacia.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.acacia.withOpacity(0.3)),
+        border: Border.all(color: AppColors.acacia.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1715,6 +1895,20 @@ class _SearchTabState extends State<_SearchTab> {
       ],
     };
 
+    // High-quality property images for different property types
+    final propertyImages = [
+      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80', // Modern apartment
+      'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&q=80', // Luxury house
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80', // Studio apartment
+      'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&q=80', // Family house
+      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&q=80', // Cozy apartment
+      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80', // Bedroom view
+      'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&q=80', // Kitchen view
+      'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=800&q=80', // Living room
+      'https://images.unsplash.com/photo-1615874959474-d609969a20ed?w=800&q=80', // Bathroom
+      'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&q=80', // Exterior view
+    ];
+
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -1726,31 +1920,166 @@ class _SearchTabState extends State<_SearchTab> {
       },
       child: Card(
         margin: const EdgeInsets.only(bottom: 16),
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Property image
+            // Property image with enhanced styling
             Container(
-              height: 200,
+              height: 220,
               width: double.infinity,
-              color: AppColors.grey200,
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
               child: Stack(
                 children: [
-                  const Center(
-                    child: Icon(
-                      Icons.image,
-                      size: 48,
-                      color: AppColors.grey400,
+                  ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                    ),
+                    child: Image.network(
+                      propertyImages[index % propertyImages.length],
+                      height: double.infinity,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Container(
+                          color: AppColors.grey200,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                AppColors.primaryGreen,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: AppColors.grey200,
+                          child: const Center(
+                            child: Icon(
+                              Icons.image_not_supported,
+                              size: 48,
+                              color: AppColors.grey400,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
+                  // Gradient overlay for better text readability
                   Positioned(
-                    top: 8,
-                    right: 8,
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.favorite_outline),
-                      style: IconButton.styleFrom(
-                        backgroundColor: AppColors.surface.withOpacity(0.9),
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      height: 60,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withValues(alpha: 0.3),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Favorite button with better styling
+                  Positioned(
+                    top: 12,
+                    right: 12,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: IconButton(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Added to favorites!'),
+                              duration: Duration(seconds: 1),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.favorite_outline),
+                        iconSize: 20,
+                        color: AppColors.primaryGreen,
+                      ),
+                    ),
+                  ),
+                  // Status badge with better positioning
+                  Positioned(
+                    top: 12,
+                    left: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryGreen,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        propertyData['status'] as String,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Rating badge
+                  Positioned(
+                    bottom: 12,
+                    left: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.star, size: 14, color: Colors.amber),
+                          const SizedBox(width: 2),
+                          Text(
+                            '${propertyData['rating']}',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -1758,41 +2087,135 @@ class _SearchTabState extends State<_SearchTab> {
               ),
             ),
 
+            // Property details with improved layout
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Title with proper overflow handling
                   Text(
                     propertyData['title'] as String,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    propertyData['location'] as String,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
+                  const SizedBox(height: 6),
+
+                  // Location with icon
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.location_on,
+                        size: 16,
+                        color: AppColors.textSecondary,
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          propertyData['location'] as String,
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: AppColors.textSecondary),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 8),
+
+                  // Price with better styling
                   Text(
                     'KES ${propertyData['price']}/month',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: AppColors.primaryGreen,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
 
-                  // Amenities
-                  Wrap(
-                    spacing: 8,
+                  // Property details in a row
+                  Row(
                     children: [
-                      _buildAmenityChip('Parking'),
-                      _buildAmenityChip('Security'),
-                      _buildAmenityChip('Water'),
+                      _buildDetailChip(
+                        Icons.bed_outlined,
+                        '${propertyData['bedrooms']} BR',
+                      ),
+                      const SizedBox(width: 8),
+                      _buildDetailChip(
+                        Icons.bathroom_outlined,
+                        '${propertyData['bathrooms']} BA',
+                      ),
+                      const SizedBox(width: 8),
+                      _buildDetailChip(
+                        Icons.square_foot,
+                        '${propertyData['area']} sqft',
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Amenities with better spacing and overflow handling
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 4,
+                    children:
+                        (propertyData['amenities'] as List<String>)
+                            .take(3)
+                            .map((amenity) => _buildAmenityChip(amenity))
+                            .toList(),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Action buttons with proper responsive layout
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Tour scheduled!'),
+                                duration: Duration(seconds: 1),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.calendar_today, size: 16),
+                          label: const Text(
+                            'Tour',
+                            style: TextStyle(fontSize: 13),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            side: BorderSide(color: AppColors.primaryGreen),
+                            foregroundColor: AppColors.primaryGreen,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Contact landlord...'),
+                                duration: Duration(seconds: 1),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.message, size: 16),
+                          label: const Text(
+                            'Contact',
+                            style: TextStyle(fontSize: 13),
+                          ),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: AppColors.primaryGreen,
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -1804,10 +2227,35 @@ class _SearchTabState extends State<_SearchTab> {
     );
   }
 
+  Widget _buildDetailChip(IconData icon, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppColors.grey100,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: AppColors.textSecondary),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildAmenityChip(String amenity) {
     return Chip(
       label: Text(amenity, style: const TextStyle(fontSize: 12)),
-      backgroundColor: AppColors.primaryGreen.withOpacity(0.1),
+      backgroundColor: AppColors.primaryGreen.withValues(alpha: 0.1),
       side: BorderSide.none,
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
@@ -2012,7 +2460,7 @@ class _FavoritesTabState extends State<_FavoritesTab> {
                     },
                     icon: const Icon(Icons.favorite),
                     style: IconButton.styleFrom(
-                      backgroundColor: AppColors.surface.withOpacity(0.9),
+                      backgroundColor: AppColors.surface.withValues(alpha: 0.9),
                       foregroundColor: AppColors.error,
                     ),
                   ),
@@ -2456,7 +2904,7 @@ class _ChatScreenState extends State<ChatScreen> {
               color: AppColors.surface,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 4,
                   offset: const Offset(0, -2),
                 ),
@@ -2614,14 +3062,14 @@ class _ProfileTabState extends ConsumerState<_ProfileTab> {
                   Text(
                     'john.kamau@email.com',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.primaryWhite.withOpacity(0.9),
+                      color: AppColors.primaryWhite.withValues(alpha: 0.9),
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     '+254 712 345 678',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.primaryWhite.withOpacity(0.9),
+                      color: AppColors.primaryWhite.withValues(alpha: 0.9),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -2632,10 +3080,10 @@ class _ProfileTabState extends ConsumerState<_ProfileTab> {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryWhite.withOpacity(0.2),
+                      color: AppColors.primaryWhite.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: AppColors.primaryWhite.withOpacity(0.3),
+                        color: AppColors.primaryWhite.withValues(alpha: 0.3),
                       ),
                     ),
                     child: Text(
@@ -2888,11 +3336,13 @@ class _ProfileTabState extends ConsumerState<_ProfileTab> {
               ),
               FilledButton(
                 onPressed: () async {
+                  final navigator = Navigator.of(context);
+                  final scaffoldMessenger = ScaffoldMessenger.of(context);
                   try {
                     await ref.read(userProvider.notifier).setUserRole(newRole);
                     if (mounted) {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      navigator.pop();
+                      scaffoldMessenger.showSnackBar(
                         SnackBar(
                           content: Text(
                             'Switched to ${newRole.title} mode successfully!',
@@ -2907,8 +3357,8 @@ class _ProfileTabState extends ConsumerState<_ProfileTab> {
                     }
                   } catch (e) {
                     if (mounted) {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      navigator.pop();
+                      scaffoldMessenger.showSnackBar(
                         SnackBar(
                           content: Text('Error switching roles: $e'),
                           backgroundColor: Colors.red,
@@ -3201,7 +3651,7 @@ class _OwnerDashboardTabState extends State<_OwnerDashboardTab> {
                   subtitle: 'Add up to 5 photos of your property',
                   onImagesChanged: (images) {
                     // Handle image selection
-                    print('Selected ${images.length} images');
+                    debugPrint('Selected ${images.length} images');
                   },
                 ),
               ],
@@ -3245,7 +3695,7 @@ class _OwnerDashboardTabState extends State<_OwnerDashboardTab> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: color, size: 24),
@@ -3276,7 +3726,7 @@ class _OwnerDashboardTabState extends State<_OwnerDashboardTab> {
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: AppColors.primaryGreen.withOpacity(0.1),
+          backgroundColor: AppColors.primaryGreen.withValues(alpha: 0.1),
           child: Icon(icon, color: AppColors.primaryGreen),
         ),
         title: Text(title),
@@ -3308,7 +3758,10 @@ class _MyPropertiesTab extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [AppColors.primaryGreen.withOpacity(0.1), Colors.white],
+                colors: [
+                  AppColors.primaryGreen.withValues(alpha: 0.1),
+                  Colors.white,
+                ],
               ),
             ),
             child: Padding(
@@ -3521,7 +3974,7 @@ class _ApplicationsTab extends StatelessWidget {
                 ),
                 Chip(
                   label: const Text('5 Pending'),
-                  backgroundColor: Colors.orange.withOpacity(0.1),
+                  backgroundColor: Colors.orange.withValues(alpha: 0.1),
                   labelStyle: const TextStyle(color: Colors.orange),
                 ),
               ],
@@ -3602,7 +4055,9 @@ class _ApplicationsTab extends StatelessWidget {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: AppColors.primaryGreen.withOpacity(0.1),
+                  backgroundColor: AppColors.primaryGreen.withValues(
+                    alpha: 0.1,
+                  ),
                   child: Text(
                     application['name']![0],
                     style: const TextStyle(
@@ -3638,7 +4093,7 @@ class _ApplicationsTab extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.1),
+                    color: statusColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(

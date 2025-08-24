@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../../core/constants/app_constants.dart';
 
 class PropertyDetailsPage extends StatefulWidget {
   final Map<String, dynamic> property;
@@ -99,9 +98,11 @@ class _PropertyDetailsPageState extends State<PropertyDetailsPage>
           child: IconButton(
             icon: const Icon(Icons.favorite_border, color: Colors.white),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Added to favorites')),
-              );
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Added to favorites')),
+                );
+              }
             },
           ),
         ),
@@ -1024,7 +1025,7 @@ class _PropertyDetailsPageState extends State<PropertyDetailsPage>
           ),
           readOnly: true,
           onTap: () async {
-            final date = await showDatePicker(
+            await showDatePicker(
               context: context,
               initialDate: DateTime.now().add(const Duration(days: 7)),
               firstDate: DateTime.now(),

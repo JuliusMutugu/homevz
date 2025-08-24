@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 import '../../../core/theme/app_colors.dart';
 
 class OwnerPaymentReportsPage extends ConsumerStatefulWidget {
@@ -60,7 +58,7 @@ class _OwnerPaymentReportsPageState
           controller: _tabController,
           indicatorColor: AppColors.textOnPrimary,
           labelColor: AppColors.textOnPrimary,
-          unselectedLabelColor: AppColors.textOnPrimary.withOpacity(0.7),
+          unselectedLabelColor: AppColors.textOnPrimary.withValues(alpha: 0.7),
           isScrollable: true,
           tabs: const [
             Tab(text: 'Summary'),
@@ -338,7 +336,7 @@ class _OwnerPaymentReportsPageState
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: _getStatusColor(payment['status']).withOpacity(0.1),
+                    color: _getStatusColor(payment['status']).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -491,7 +489,7 @@ class _OwnerPaymentReportsPageState
                   const SizedBox(height: 16),
                   ..._getPropertyWiseData().map((property) {
                     return _buildPropertySummaryCard(property);
-                  }).toList(),
+                  }),
                 ],
               ),
             ),
@@ -859,101 +857,85 @@ class _OwnerPaymentReportsPageState
       // Simulate PDF generation delay
       await Future.delayed(const Duration(seconds: 2));
 
-      // Get the downloads directory
-      Directory? downloadsDir;
-      if (Platform.isAndroid) {
-        downloadsDir = Directory('/storage/emulated/0/Download');
-        if (!await downloadsDir.exists()) {
-          downloadsDir = await getExternalStorageDirectory();
-        }
-      } else {
-        downloadsDir = await getDownloadsDirectory();
-      }
+      // Create a simple text report instead of PDF for now
+      final reportContent = '''
+HomeVZ Payment Report
+Generated: ${DateTime.now().toString().split('.')[0]}
 
-      if (downloadsDir != null) {
-        final timestamp = DateTime.now().millisecondsSinceEpoch;
-        final fileName = 'payment_report_$timestamp.pdf';
-        final filePath = '${downloadsDir.path}/$fileName';
+=== PAYMENT SUMMARY ===
+Total Collection: KES 2,450,000
+This Month: KES 350,000
+Pending Payments: KES 45,000
+Overdue: KES 12,000
 
-        // Create a mock PDF file (in real implementation, use pdf package)
-        final file = File(filePath);
-        await file.writeAsString('''
-%PDF-1.4
-1 0 obj
-<<
-/Type /Catalog
-/Pages 2 0 R
->>
-endobj
+=== RECENT PAYMENTS ===
+${_getRecentPayments().map((payment) => '''
+${payment['tenantName']} - ${payment['propertyTitle']}
+Amount: KES ${payment['amount']}
+Method: ${payment['method']}
+Date: ${payment['date']}
+Status: ${payment['status']}
+''').join('\n')}
 
-2 0 obj
-<<
-/Type /Pages
-/Kids [3 0 R]
-/Count 1
->>
-endobj
+=== PROPERTY BREAKDOWN ===
+${_getPropertyWiseData().map((property) => '''
+${property['name']}
+Expected: KES ${property['expected']}
+Collected: KES ${property['collected']}
+Collection Rate: ${property['collectionRate']}%
+''').join('\n')}
+      ''';
 
-3 0 obj
-<<
-/Type /Page
-/Parent 2 0 R
-/MediaBox [0 0 612 792]
-/Contents 4 0 R
->>
-endobj
+      // For Android, try to save to Downloads directory
+      try {
+        final downloadsDir = Directory('/storage/emulated/0/Download');
+        if (await downloadsDir.exists()) {
+          final timestamp = DateTime.now().millisecondsSinceEpoch;
+          final fileName = 'payment_report_$timestamp.txt';
+          final filePath = '${downloadsDir.path}/$fileName';
 
-4 0 obj
-<<
-/Length 44
->>
-stream
-BT
-/F1 12 Tf
-100 700 Td
-(HomeVZ Payment Report) Tj
-ET
-endstream
-endobj
+          final file = File(filePath);
+          await file.writeAsString(reportContent);
 
-xref
-0 5
-0000000000 65535 f 
-0000000009 00000 n 
-0000000058 00000 n 
-0000000115 00000 n 
-0000000206 00000 n 
-trailer
-<<
-/Size 5
-/Root 1 0 R
->>
-startxref
-298
-%%EOF
-        ''');
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('PDF saved to: $filePath'),
-              backgroundColor: AppColors.primaryGreen,
-              duration: const Duration(seconds: 5),
-              action: SnackBarAction(
-                label: 'SHARE',
-                onPressed: () => _sharePDF(filePath),
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Report saved to Downloads: $fileName'),
+                backgroundColor: AppColors.primaryGreen,
+                duration: const Duration(seconds: 5),
+                action: SnackBarAction(label: 'OK', onPressed: () {}),
               ),
-            ),
+            );
+          }
+        } else {
+          throw Exception('Downloads directory not accessible');
+        }
+      } catch (e) {
+        // Fallback: show the report content in a dialog
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder:
+                (context) => AlertDialog(
+                  title: const Text('Payment Report'),
+                  content: SingleChildScrollView(
+                    child: SelectableText(reportContent),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Close'),
+                    ),
+                  ],
+                ),
           );
         }
-      } else {
-        throw Exception('Could not access downloads directory');
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error generating PDF: $e'),
+            content: Text('Error generating report: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -962,16 +944,12 @@ startxref
   }
 
   Future<void> _sharePDF(String filePath) async {
-    try {
-      await Share.shareXFiles([XFile(filePath)], text: 'HomeVZ Payment Report');
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error sharing PDF: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('File sharing not implemented yet'),
+        backgroundColor: Colors.orange,
+      ),
+    );
   }
 
   void _viewPaymentDetails(Map<String, dynamic> payment) {
@@ -1049,19 +1027,18 @@ startxref
       if (Platform.isAndroid) {
         downloadsDir = Directory('/storage/emulated/0/Download');
         if (!await downloadsDir.exists()) {
-          downloadsDir = await getExternalStorageDirectory();
+          downloadsDir = Directory('/data/data/com.example.homevz/files');
         }
       } else {
-        downloadsDir = await getDownloadsDirectory();
+        downloadsDir = Directory('/storage/emulated/0/Download');
       }
 
-      if (downloadsDir != null) {
-        final fileName = 'receipt_${payment['transactionId']}.pdf';
-        final filePath = '${downloadsDir.path}/$fileName';
+      final fileName = 'receipt_${payment['transactionId']}.pdf';
+      final filePath = '${downloadsDir.path}/$fileName';
 
-        // Create a mock receipt PDF
-        final file = File(filePath);
-        await file.writeAsString('''
+      // Create a mock receipt PDF
+      final file = File(filePath);
+      await file.writeAsString('''
 %PDF-1.4
 1 0 obj
 <<
@@ -1124,21 +1101,20 @@ trailer
 startxref
 400
 %%EOF
-        ''');
+      ''');
 
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Receipt saved: $fileName'),
-              backgroundColor: AppColors.primaryGreen,
-              duration: const Duration(seconds: 4),
-              action: SnackBarAction(
-                label: 'SHARE',
-                onPressed: () => _sharePDF(filePath),
-              ),
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Receipt saved: $fileName'),
+            backgroundColor: AppColors.primaryGreen,
+            duration: const Duration(seconds: 4),
+            action: SnackBarAction(
+              label: 'SHARE',
+              onPressed: () => _sharePDF(filePath),
             ),
-          );
-        }
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -1167,20 +1143,19 @@ startxref
       if (Platform.isAndroid) {
         downloadsDir = Directory('/storage/emulated/0/Download');
         if (!await downloadsDir.exists()) {
-          downloadsDir = await getExternalStorageDirectory();
+          downloadsDir = Directory('/data/data/com.example.homevz/files');
         }
       } else {
-        downloadsDir = await getDownloadsDirectory();
+        downloadsDir = Directory('/storage/emulated/0/Download');
       }
 
-      if (downloadsDir != null) {
-        final timestamp = DateTime.now().millisecondsSinceEpoch;
-        final fileName =
-            '${property['name'].toString().replaceAll(' ', '_')}_report_$timestamp.pdf';
-        final filePath = '${downloadsDir.path}/$fileName';
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final fileName =
+          '${property['name'].toString().replaceAll(' ', '_')}_report_$timestamp.pdf';
+      final filePath = '${downloadsDir.path}/$fileName';
 
-        final file = File(filePath);
-        await file.writeAsString('''
+      final file = File(filePath);
+      await file.writeAsString('''
 %PDF-1.4
 1 0 obj
 <<
@@ -1245,21 +1220,20 @@ trailer
 startxref
 450
 %%EOF
-        ''');
+      ''');
 
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Property report saved: $fileName'),
-              backgroundColor: AppColors.primaryGreen,
-              duration: const Duration(seconds: 4),
-              action: SnackBarAction(
-                label: 'SHARE',
-                onPressed: () => _sharePDF(filePath),
-              ),
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Property report saved: $fileName'),
+            backgroundColor: AppColors.primaryGreen,
+            duration: const Duration(seconds: 4),
+            action: SnackBarAction(
+              label: 'SHARE',
+              onPressed: () => _sharePDF(filePath),
             ),
-          );
-        }
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {

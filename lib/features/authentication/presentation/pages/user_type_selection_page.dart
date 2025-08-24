@@ -168,7 +168,7 @@ class UserTypeSelectionPage extends ConsumerWidget {
           decoration: BoxDecoration(
             color:
                 isSelected
-                    ? AppColors.primaryGreen.withOpacity(0.1)
+                    ? AppColors.primaryGreen.withValues(alpha: 0.1)
                     : AppColors.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
@@ -178,7 +178,7 @@ class UserTypeSelectionPage extends ConsumerWidget {
             boxShadow: [
               if (isSelected)
                 BoxShadow(
-                  color: AppColors.primaryGreen.withOpacity(0.2),
+                  color: AppColors.primaryGreen.withValues(alpha: 0.2),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
@@ -195,7 +195,7 @@ class UserTypeSelectionPage extends ConsumerWidget {
                       color:
                           isSelected
                               ? AppColors.primaryGreen
-                              : AppColors.primaryGreen.withOpacity(0.1),
+                              : AppColors.primaryGreen.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
@@ -240,34 +240,32 @@ class UserTypeSelectionPage extends ConsumerWidget {
               const SizedBox(height: 16),
 
               // Features list
-              ...features
-                  .map(
-                    (feature) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.check,
-                            color:
-                                isSelected
-                                    ? AppColors.primaryGreen
-                                    : AppColors.grey400,
-                            size: 16,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              feature,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                          ),
-                        ],
+              ...features.map(
+                (feature) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.check,
+                        color:
+                            isSelected
+                                ? AppColors.primaryGreen
+                                : AppColors.grey400,
+                        size: 16,
                       ),
-                    ),
-                  )
-                  .toList(),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          feature,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),

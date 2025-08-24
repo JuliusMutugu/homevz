@@ -178,7 +178,7 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage>
         decoration: BoxDecoration(
           color:
               isSelected
-                  ? AppColors.primaryGreen.withOpacity(0.1)
+                  ? AppColors.primaryGreen.withValues(alpha: 0.1)
                   : AppColors.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
@@ -187,7 +187,7 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage>
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -204,7 +204,7 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage>
                     color:
                         isSelected
                             ? AppColors.primaryGreen
-                            : AppColors.primaryGreen.withOpacity(0.1),
+                            : AppColors.primaryGreen.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
@@ -250,34 +250,32 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage>
             const SizedBox(height: 16),
 
             // Features list
-            ...features
-                .map(
-                  (feature) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.check,
-                          size: 16,
-                          color:
-                              isSelected
-                                  ? AppColors.primaryGreen
-                                  : AppColors.textSecondary,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            feature,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        ),
-                      ],
+            ...features.map(
+              (feature) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.check,
+                      size: 16,
+                      color:
+                          isSelected
+                              ? AppColors.primaryGreen
+                              : AppColors.textSecondary,
                     ),
-                  ),
-                )
-                .toList(),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        feature,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),

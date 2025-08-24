@@ -64,7 +64,7 @@ class _ReportsPageState extends ConsumerState<ReportsPage>
           controller: _tabController,
           indicatorColor: AppColors.textOnPrimary,
           labelColor: AppColors.textOnPrimary,
-          unselectedLabelColor: AppColors.textOnPrimary.withOpacity(0.7),
+          unselectedLabelColor: AppColors.textOnPrimary.withValues(alpha: 0.7),
           tabs: const [
             Tab(text: 'Financial', icon: Icon(Icons.analytics, size: 20)),
             Tab(text: 'Occupancy', icon: Icon(Icons.home, size: 20)),
@@ -119,7 +119,7 @@ class _ReportsPageState extends ConsumerState<ReportsPage>
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [AppColors.primaryGreen.withOpacity(0.1), Colors.white],
+          colors: [AppColors.primaryGreen.withValues(alpha: 0.1), Colors.white],
         ),
       ),
       child: Column(
@@ -128,10 +128,10 @@ class _ReportsPageState extends ConsumerState<ReportsPage>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: AppColors.primaryGreen.withOpacity(0.1),
+              color: AppColors.primaryGreen.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: AppColors.primaryGreen.withOpacity(0.3),
+                color: AppColors.primaryGreen.withValues(alpha: 0.3),
               ),
             ),
             child: Row(
@@ -666,7 +666,7 @@ class _ReportsPageState extends ConsumerState<ReportsPage>
   Widget _buildPaymentStatusTile(String status, String count, Color color) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: color.withOpacity(0.1),
+        backgroundColor: color.withValues(alpha: 0.1),
         child: Icon(Icons.payment, color: color, size: 20),
       ),
       title: Text(status),
@@ -707,7 +707,7 @@ class _ReportsPageState extends ConsumerState<ReportsPage>
   ) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: AppColors.primaryGreen.withOpacity(0.1),
+        backgroundColor: AppColors.primaryGreen.withValues(alpha: 0.1),
         child: Icon(Icons.home, color: AppColors.primaryGreen),
       ),
       title: Text(property),
@@ -770,7 +770,7 @@ class _ReportsPageState extends ConsumerState<ReportsPage>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: statusColor.withOpacity(0.1),
+                color: statusColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -826,7 +826,7 @@ class _ReportsPageState extends ConsumerState<ReportsPage>
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: AppColors.primaryGreen.withOpacity(0.1),
+          backgroundColor: AppColors.primaryGreen.withValues(alpha: 0.1),
           child: Text(
             name[0],
             style: TextStyle(

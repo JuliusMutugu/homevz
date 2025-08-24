@@ -17,7 +17,6 @@ class AddPropertyPage extends ConsumerStatefulWidget {
 class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
   final _formKey = GlobalKey<FormState>();
   final PageController _pageController = PageController();
-  GoogleMapController? _mapController;
 
   // Form controllers
   final _titleController = TextEditingController();
@@ -31,8 +30,8 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
   // Form data
   String _selectedPropertyType = 'Apartment';
   String _selectedFurnishing = 'Unfurnished';
-  List<String> _selectedAmenities = [];
-  List<File> _propertyImages = [];
+  final List<String> _selectedAmenities = [];
+  final List<File> _propertyImages = [];
   LatLng? _selectedLocation;
   String? _locationAddress;
 
@@ -80,7 +79,10 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [AppColors.primaryGreen.withOpacity(0.1), Colors.white],
+            colors: [
+              AppColors.primaryGreen.withValues(alpha: 0.1),
+              Colors.white,
+            ],
             stops: const [0.0, 0.3],
           ),
         ),
@@ -194,7 +196,9 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: AppColors.primaryGreen.withOpacity(0.1),
+                            color: AppColors.primaryGreen.withValues(
+                              alpha: 0.1,
+                            ),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Icon(
@@ -653,10 +657,10 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.primaryGreen.withOpacity(0.1),
+              color: AppColors.primaryGreen.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: AppColors.primaryGreen.withOpacity(0.3),
+                color: AppColors.primaryGreen.withValues(alpha: 0.3),
               ),
             ),
             child: Column(
@@ -686,7 +690,7 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
                   '• Highlight unique features\n'
                   '• Keep spaces clean and organized',
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: AppColors.primaryGreen.withOpacity(0.8),
+                    color: AppColors.primaryGreen.withValues(alpha: 0.8),
                   ),
                 ),
               ],
@@ -750,7 +754,7 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
                       zoom: 12,
                     ),
                     onMapCreated: (GoogleMapController controller) {
-                      _mapController = controller;
+                      // Map controller can be used here if needed
                     },
                     onTap: (LatLng location) {
                       setState(() {
@@ -790,7 +794,7 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.7),
+                          color: Colors.black.withValues(alpha: 0.7),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Text(
@@ -811,10 +815,10 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.primaryGreen.withOpacity(0.1),
+                color: AppColors.primaryGreen.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: AppColors.primaryGreen.withOpacity(0.3),
+                  color: AppColors.primaryGreen.withValues(alpha: 0.3),
                 ),
               ),
               child: Column(
@@ -854,9 +858,11 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.warning.withOpacity(0.1),
+                color: AppColors.warning.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.warning.withOpacity(0.3)),
+                border: Border.all(
+                  color: AppColors.warning.withValues(alpha: 0.3),
+                ),
               ),
               child: Row(
                 children: [
@@ -1084,7 +1090,9 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
                         }
                       });
                     },
-                    selectedColor: AppColors.primaryGreen.withOpacity(0.2),
+                    selectedColor: AppColors.primaryGreen.withValues(
+                      alpha: 0.2,
+                    ),
                     checkmarkColor: AppColors.primaryGreen,
                   );
                 }).toList(),

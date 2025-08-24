@@ -30,21 +30,19 @@ class _SplashPageState extends ConsumerState<SplashPage>
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
+      ),
+    );
 
-    _scaleAnimation = Tween<double>(
-      begin: 0.5,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: const Interval(0.2, 0.7, curve: Curves.elasticOut),
-    ));
+    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.2, 0.7, curve: Curves.elasticOut),
+      ),
+    );
 
     _animationController.forward();
   }
@@ -53,9 +51,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
     Future.delayed(const Duration(milliseconds: 3000), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const OnboardingPage(),
-          ),
+          MaterialPageRoute(builder: (context) => const OnboardingPage()),
         );
       }
     });
@@ -91,7 +87,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color: Colors.black.withValues(alpha: 0.2),
                             blurRadius: 10,
                             offset: const Offset(0, 5),
                           ),
@@ -104,28 +100,30 @@ class _SplashPageState extends ConsumerState<SplashPage>
                       ),
                     ),
                     const SizedBox(height: 24),
-                    
+
                     // App Name
                     Text(
                       AppConstants.appName,
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      style: Theme.of(
+                        context,
+                      ).textTheme.headlineMedium?.copyWith(
                         color: AppColors.primaryWhite,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.2,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    
+
                     // App Tagline
                     Text(
                       AppConstants.appDescription,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppColors.primaryWhite.withOpacity(0.9),
+                        color: AppColors.primaryWhite.withValues(alpha: 0.9),
                       ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 40),
-                    
+
                     // Loading Indicator
                     const SizedBox(
                       width: 40,

@@ -4,7 +4,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import '../../../core/services/notification_service.dart';
 
 class NotificationsPage extends ConsumerStatefulWidget {
-  const NotificationsPage({Key? key}) : super(key: key);
+  const NotificationsPage({super.key});
 
   @override
   ConsumerState<NotificationsPage> createState() => _NotificationsPageState();
@@ -264,7 +264,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage>
                   decoration: BoxDecoration(
                     color: _getNotificationColor(
                       notification.type,
-                    ).withOpacity(0.1),
+                    ).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(

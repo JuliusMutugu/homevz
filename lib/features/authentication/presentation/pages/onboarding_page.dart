@@ -119,7 +119,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                           width: 120,
                           height: 120,
                           decoration: BoxDecoration(
-                            color: data.color.withOpacity(0.1),
+                            color: data.color.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(60),
                           ),
                           child: Icon(data.icon, size: 60, color: data.color),

@@ -50,7 +50,7 @@ class _BookingHistoryPageState extends ConsumerState<BookingHistoryPage>
           controller: _tabController,
           indicatorColor: AppColors.textOnPrimary,
           labelColor: AppColors.textOnPrimary,
-          unselectedLabelColor: AppColors.textOnPrimary.withOpacity(0.7),
+          unselectedLabelColor: AppColors.textOnPrimary.withValues(alpha: 0.7),
           tabs: const [
             Tab(text: 'All'),
             Tab(text: 'Active'),
@@ -68,7 +68,7 @@ class _BookingHistoryPageState extends ConsumerState<BookingHistoryPage>
               color: AppColors.surface,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.withValues(alpha: 0.1),
                   spreadRadius: 1,
                   blurRadius: 4,
                   offset: const Offset(0, 2),
@@ -194,9 +194,9 @@ class _BookingHistoryPageState extends ConsumerState<BookingHistoryPage>
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.1),
+                    color: statusColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: statusColor.withOpacity(0.3)),
+                    border: Border.all(color: statusColor.withValues(alpha: 0.3)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -492,14 +492,16 @@ class _BookingHistoryPageState extends ConsumerState<BookingHistoryPage>
                   title: const Text('Date Range'),
                   subtitle: const Text('Filter by booking date'),
                   onTap: () async {
+                    if (!mounted) return;
                     Navigator.pop(context);
+                    final scaffoldMessenger = ScaffoldMessenger.of(context);
                     final dateRange = await showDateRangePicker(
                       context: context,
                       firstDate: DateTime(2020),
                       lastDate: DateTime.now(),
                     );
-                    if (dateRange != null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
+                    if (dateRange != null && mounted) {
+                      scaffoldMessenger.showSnackBar(
                         SnackBar(
                           content: Text(
                             'Filtered from ${dateRange.start.toString().split(' ')[0]} to ${dateRange.end.toString().split(' ')[0]}',
@@ -739,10 +741,10 @@ class BookingDetailsPage extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.1),
+                        color: Colors.green.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: Colors.green.withOpacity(0.3),
+                          color: Colors.green.withValues(alpha: 0.3),
                         ),
                       ),
                       child: Row(
@@ -880,10 +882,4 @@ class BookingDetailsPage extends StatelessWidget {
             child: Text(
               value,
               style: const TextStyle(fontWeight: FontWeight.w500),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+  

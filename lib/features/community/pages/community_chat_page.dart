@@ -7,7 +7,7 @@ import '../../../core/services/image_upload_service.dart';
 class CommunityChatPage extends ConsumerStatefulWidget {
   final CommunityGroup group;
 
-  const CommunityChatPage({Key? key, required this.group}) : super(key: key);
+  const CommunityChatPage({super.key, required this.group});
 
   @override
   ConsumerState<CommunityChatPage> createState() => _CommunityChatPageState();
@@ -271,7 +271,7 @@ class _CommunityChatPageState extends ConsumerState<CommunityChatPage> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
+            color: Colors.grey.withValues(alpha: 0.3),
             spreadRadius: 1,
             blurRadius: 3,
             offset: const Offset(0, -1),

@@ -8,7 +8,6 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       fontFamily: 'Inter', // Modern, readable font
-      
       // Color scheme
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primaryGreen,
@@ -16,14 +15,12 @@ class AppTheme {
         primary: AppColors.primaryGreen,
         secondary: AppColors.mpesaGreen,
         surface: AppColors.surface,
-        background: AppColors.background,
         error: AppColors.error,
         onPrimary: AppColors.textOnPrimary,
         onSecondary: AppColors.textOnPrimary,
         onSurface: AppColors.textPrimary,
-        onBackground: AppColors.textPrimary,
       ),
-      
+
       // AppBar theme
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.primaryGreen,
@@ -36,17 +33,15 @@ class AppTheme {
           color: AppColors.textOnPrimary,
         ),
       ),
-      
+
       // Card theme
       cardTheme: CardTheme(
         color: AppColors.cardBackground,
         elevation: 2,
         shadowColor: AppColors.grey300,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      
+
       // Button themes
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -54,31 +49,21 @@ class AppTheme {
           foregroundColor: AppColors.textOnPrimary,
           elevation: 2,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
-      
+
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primaryGreen,
           side: const BorderSide(color: AppColors.primaryGreen),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
-      
+
       // Input decoration theme
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
@@ -99,10 +84,13 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: AppColors.error),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
         hintStyle: const TextStyle(color: AppColors.textHint),
       ),
-      
+
       // Text theme
       textTheme: const TextTheme(
         headlineLarge: TextStyle(
@@ -166,7 +154,7 @@ class AppTheme {
           color: AppColors.textSecondary,
         ),
       ),
-      
+
       // Bottom navigation bar theme
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: AppColors.surface,
@@ -175,15 +163,13 @@ class AppTheme {
         type: BottomNavigationBarType.fixed,
         elevation: 8,
       ),
-      
+
       // Chip theme
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.grey100,
         selectedColor: AppColors.primaryGreen,
         labelStyle: const TextStyle(color: AppColors.textPrimary),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );
   }
@@ -192,17 +178,16 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       fontFamily: 'Inter',
-      
+
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primaryGreen,
         brightness: Brightness.dark,
         primary: AppColors.primaryGreen,
         secondary: AppColors.mpesaGreen,
         surface: const Color(0xFF1E1E1E),
-        background: const Color(0xFF121212),
         error: AppColors.error,
       ),
-      
+
       // Additional dark theme customizations can be added here
     );
   }

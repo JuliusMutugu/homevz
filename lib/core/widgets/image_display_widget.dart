@@ -15,7 +15,7 @@ class ImageDisplayWidget extends StatelessWidget {
   final VoidCallback? onTap;
 
   const ImageDisplayWidget({
-    Key? key,
+    super.key,
     this.imageUrl,
     this.imageFile,
     this.width,
@@ -25,7 +25,7 @@ class ImageDisplayWidget extends StatelessWidget {
     this.errorWidget,
     this.enableZoom = false,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -137,14 +137,14 @@ class ImageGalleryWidget extends StatelessWidget {
   final Function(int)? onImageRemove;
 
   const ImageGalleryWidget({
-    Key? key,
+    super.key,
     this.imageUrls = const [],
     this.imageFiles = const [],
     this.itemHeight = 120,
     this.enableZoom = true,
     this.onImageTap,
     this.onImageRemove,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -220,13 +220,13 @@ class FullImageViewer extends StatelessWidget {
   final int initialIndex;
 
   const FullImageViewer({
-    Key? key,
+    super.key,
     this.imageUrl,
     this.imageFile,
     this.imageUrls,
     this.imageFiles,
     this.initialIndex = 0,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

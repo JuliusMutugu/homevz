@@ -8,7 +8,7 @@ class AppConstants {
   static const String appDescription = 'Your trusted housing solution in Kenya';
 
   // API Configuration
-  static const String baseUrl = 'https://api.homevz.co.ke/v1';
+  static const String baseUrl = 'http://localhost:3000/api';
   static const String apiKey = 'your_api_key_here';
   static const int connectionTimeout = 30000; // 30 seconds
   static const int receiveTimeout = 30000; // 30 seconds

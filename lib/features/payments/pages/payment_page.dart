@@ -261,10 +261,10 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.mpesaGreen.withOpacity(0.1),
+                color: AppColors.mpesaGreen.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: AppColors.mpesaGreen.withOpacity(0.3),
+                  color: AppColors.mpesaGreen.withValues(alpha: 0.3),
                 ),
               ),
               child: Column(

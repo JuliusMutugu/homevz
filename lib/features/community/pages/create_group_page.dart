@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/services/community_service.dart';
 
 class CreateGroupPage extends ConsumerStatefulWidget {
-  const CreateGroupPage({Key? key}) : super(key: key);
+  const CreateGroupPage({super.key});
 
   @override
   ConsumerState<CreateGroupPage> createState() => _CreateGroupPageState();
@@ -195,7 +195,7 @@ class _CreateGroupPageState extends ConsumerState<CreateGroupPage> {
 
   Widget _buildGroupTypeInfo() {
     return Card(
-      color: _getGroupTypeColor(_selectedType).withOpacity(0.1),
+      color: _getGroupTypeColor(_selectedType).withValues(alpha: 0.1),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -222,7 +222,7 @@ class _CreateGroupPageState extends ConsumerState<CreateGroupPage> {
               _getGroupTypeFullDescription(_selectedType),
               style: TextStyle(
                 fontSize: 12,
-                color: _getGroupTypeColor(_selectedType).withOpacity(0.8),
+                color: _getGroupTypeColor(_selectedType).withValues(alpha: 0.8),
               ),
             ),
           ],

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timeago/timeago.dart' as timeago;
 import '../../../core/services/community_service.dart';
 import 'community_chat_page.dart';
 import 'create_group_page.dart';
 
 class CommunityPage extends ConsumerStatefulWidget {
-  const CommunityPage({Key? key}) : super(key: key);
+  const CommunityPage({super.key});
 
   @override
   ConsumerState<CommunityPage> createState() => _CommunityPageState();
