@@ -196,7 +196,9 @@ class _BookingHistoryPageState extends ConsumerState<BookingHistoryPage>
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: statusColor.withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: statusColor.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -882,4 +884,10 @@ class BookingDetailsPage extends StatelessWidget {
             child: Text(
               value,
               style: const TextStyle(fontWeight: FontWeight.w500),
-  
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
